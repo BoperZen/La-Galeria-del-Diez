@@ -19,9 +19,10 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             _context = context;
         }
 
-        public Task<User> FindByIdAsync(int id)
+        public async Task<User> FindByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var @object = await _context.Set<User>().FindAsync(id);
+            return @object!;
         }
 
         public async Task<ICollection<User>> ListAsync()

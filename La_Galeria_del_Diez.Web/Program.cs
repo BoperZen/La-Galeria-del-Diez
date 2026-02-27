@@ -93,6 +93,7 @@ builder.Services.AddAutoMapper(config =>
     //*** Profiles 
     config.AddProfile<UserProfile>();
     config.AddProfile<RolProfile>();
+    config.AddProfile<StateProfile>();
 });
 
 // ======================= 
