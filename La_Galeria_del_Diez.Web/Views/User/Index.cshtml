@@ -3,43 +3,43 @@
 @using X.PagedList.Mvc.Core
 
 @{
-    ViewData["Title"] = "Administración de usuarios";
-    var total = Model?.Count() ?? 0;
+    ViewData["Title"] = "User Management";
+    var total = Model?.TotalItemCount ?? 0;
 }
 
 <nav class="mb-3">
     <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
-            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Inicio</a>
+            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">Gestión de Usuarios</li>
+        <li class="breadcrumb-item active" aria-current="page">User Management</li>
     </ol>
 </nav>
 
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
     <div>
-        <h1 class="h3 mb-1">Usuarios</h1>
-        <p class="text-muted mb-0">Gestión administrativa de usuarios. Total: <strong>@total</strong>.</p>
+        <h1 class="h3 mb-1">Users</h1>
+        <p class="text-muted mb-0">Administrative management of users. Total: <strong>@total</strong>.</p>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
         <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> Nuevo usuario
+            <i class="bi bi-plus-lg me-1"></i> New user
         </a>
         <a asp-action="UserReportPDF" class="btn btn-outline-secondary">
-            <i class="bi bi-filetype-pdf me-1"></i> Exportar PDF
+            <i class="bi bi-filetype-pdf me-1"></i> Export PDF
         </a>
     </div>
 </div>
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-body d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">Listado</span>
+        <span class="fw-semibold">List</span>
         <span class="small text-muted">
-            Mostrando
+            Showing
             <strong>@Model?.FirstItemOnPage</strong>–
             <strong>@Model?.LastItemOnPage</strong>
-            de <strong>@Model?.TotalItemCount</strong>
+            of <strong>@Model?.TotalItemCount</strong>
         </span>
     </div>
 
@@ -48,10 +48,10 @@
         {
             <div class="p-4 text-center">
                 <div class="display-6 mb-2"><i class="bi bi-inbox"></i></div>
-                <h2 class="h5">No hay usuarios registrados</h2>
-                <p class="text-muted mb-3">Crea el primer usuario para iniciar la gestión.</p>
+                <h2 class="h5">No users registered</h2>
+                <p class="text-muted mb-3">Create the first user to start management.</p>
                 <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> Crear usuario
+                    <i class="bi bi-plus-lg me-1"></i> Create user
                 </a>
             </div>
         }
@@ -64,7 +64,7 @@
                             <th style="width:170px;">@Html.DisplayNameFor(model => model.First().Username)</th>
                             <th style="width:120px;">@Html.DisplayNameFor(model => model.First().IdRolNavigation.Description)</th>
                             <th style="width:120px;">@Html.DisplayNameFor(model => model.First().State)</th>
-                            <th class="text-end pe-3" style="width:220px;">Acciones</th>
+                            <th class="text-end pe-3" style="width:220px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,15 +75,15 @@
                                 <td>@item.IdRolNavigation.Description</td>
                                 <td>@item.State</td>
                                 <td class="text-end pe-3">
-                                    <div class="btn-group" role="group" aria-label="Acciones">
+                                    <div class="btn-group" role="group" aria-label="Actions">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">
-                                            <i class="bi bi-eye"></i><span class="d-none d-lg-inline ms-1">Detalle</span>
+                                            <i class="bi bi-eye"></i><span class="d-none d-lg-inline ms-1">Details</span>
                                         </a>
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-pencil-square"></i><span class="d-none d-lg-inline ms-1">Editar</span>
+                                            <i class="bi bi-pencil-square"></i><span class="d-none d-lg-inline ms-1">Edit</span>
                                         </a>
                                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash"></i><span class="d-none d-lg-inline ms-1">Eliminar</span>
+                                            <i class="bi bi-trash"></i><span class="d-none d-lg-inline ms-1">Delete</span>
                                         </a>
                                     </div>
                                 </td>
@@ -95,14 +95,14 @@
         }
     </div>
 
-    @* Paginación *@
+    @* Pagination *@
     @if (Model != null && Model.PageCount > 1)
     {
         <div class="card-footer bg-body d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
             <div class="small text-muted">
-                Página <strong>@Model.PageNumber</strong> de <strong>@Model.PageCount</strong>
+                Page <strong>@Model.PageNumber</strong> of <strong>@Model.PageCount</strong>
             </div>
-            <nav aria-label="Paginación de usuarios">
+            <nav aria-label="User pagination">
                 @Html.PagedListPager(
                     Model,
                     page => Url.Action("Index", new { page }),
