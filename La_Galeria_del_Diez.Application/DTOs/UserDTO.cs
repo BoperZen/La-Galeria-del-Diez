@@ -42,5 +42,6 @@ namespace La_Galeria_del_Diez.Application.DTOs
 
         [Display(Name = "Role")]
         public RolDTO IdRolNavigation { get; set; } = new();
+        public int Tally { get; set; }
     }
 }

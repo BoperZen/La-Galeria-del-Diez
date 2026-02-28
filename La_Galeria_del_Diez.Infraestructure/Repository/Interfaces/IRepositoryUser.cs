@@ -11,5 +11,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
     {
         Task<ICollection<User>> ListAsync();
         Task<User> FindByIdAsync(int id);
+        Task<int> Tally(int id);
     }
 }

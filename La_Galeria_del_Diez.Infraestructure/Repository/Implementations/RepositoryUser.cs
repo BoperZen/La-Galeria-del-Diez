@@ -33,5 +33,23 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                           .ToListAsync();
             return collection;
         }
+
+        public async Task<int> Tally(int id)
+        {
+            var @object = await _context.Set<User>().FindAsync(id);
+            int count = 0;
+            if (@object.IdRol == 2)
+            {
+                count = await _context.Set<Auction>().Where(i => i.IdUser == id).CountAsync();
+            }
+            else
+            {
+                if (@object.IdRol == 3)
+                {
+                    count = await _context.Set<Bidding>().Where(i => i.IdUser == id).CountAsync();
+                }
+            }
+            return count;
+        }
     }
 }

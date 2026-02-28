@@ -4,6 +4,7 @@ using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
         {
             var @object = await _repository.FindByIdAsync(id);
             var objectMapped = _mapper.Map<UserDTO>(@object);
+            objectMapped.Tally = await Tally(id);
             return objectMapped;
         }
 
@@ -32,6 +34,11 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
         {
             var list = await _repository.ListAsync();
             return _mapper.Map<ICollection<UserDTO>>(list);
+        }
+
+        private async Task<int> Tally(int id)
+        {
+            return await _repository.Tally(id);
         }
     }
 }
