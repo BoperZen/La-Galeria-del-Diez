@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using La_Galeria_del_Diez.Infraestructure.Models;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +34,7 @@ public partial class La_Galeria_del_Diez_Context : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Auction__3214EC07EAA96921");
 
-            entity.Property(e => e.AutionWinner).HasColumnName("Aution_Winner");
+            entity.Property(e => e.AuctionWinner).HasColumnName("Auction_Winner");
             entity.Property(e => e.BasePrice)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("Base_Price");
@@ -65,6 +65,11 @@ public partial class La_Galeria_del_Diez_Context : DbContext
                 .HasForeignKey(d => d.IdUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Auction_User");
+
+            entity.HasOne(d => d.Winner).WithMany()
+                .HasForeignKey(d => d.AuctionWinner)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Auction_Winner");
         });
 
         modelBuilder.Entity<AuctionableObject>(entity =>

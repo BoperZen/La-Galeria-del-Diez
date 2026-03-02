@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
 {
-    public interface IRepositoryUser
+    public interface IRepositoryObject
     {
-        Task<ICollection<User>> ListAsync();
-        Task<User> FindByIdAsync(int id);
-        Task<int> Tally(int id);
+        Task<ICollection<AuctionableObject>> ListAsync();
+        Task<AuctionableObject> FindByIdAsync(int id);
     }
 }
