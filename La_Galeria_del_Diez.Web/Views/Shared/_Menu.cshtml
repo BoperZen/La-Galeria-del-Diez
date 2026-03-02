@@ -1,90 +1,103 @@
-﻿<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-    <div class="container">
-        <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">
-            <i class="bi bi-book me-2"></i>Librería
-        </a>
+﻿<nav class="bg-card border-b border-border sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a asp-controller="Home" asp-action="Index" class="flex items-center space-x-3 text-primary hover:text-secondary transition-colors">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <div class="hidden lg:block">
+                        <div class="text-xl font-bold">La Galería del Diez</div>
+                        <div class="text-xs text-muted-foreground">Subastas de Camisetas</div>
+                    </div>
+                </a>
+            </div>
 
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse" data-bs-target="#navbarMain"
-                aria-controls="navbarMain" aria-expanded="false" aria-label="Abrir menú">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <!-- Right Icons -->
+            <div class="flex items-center space-x-4">
+                <!-- Search Icon -->
+                <button class="p-2 text-foreground hover:text-primary transition-colors rounded-lg hover:bg-muted">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
 
-        <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Notifications -->
+                <button class="relative p-2 text-foreground hover:text-primary transition-colors rounded-lg hover:bg-muted">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
+                </button>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Libro" asp-action="Index">
-                        <i class="bi bi-collection me-1"></i>Catálogo
-                    </a>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-wrench me-1"></i>Mantenimiento
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" asp-controller="Autor" asp-action="Index">Autores</a></li>
-                        <li><a class="dropdown-item" asp-controller="Libro" asp-action="IndexAdmin">Libros</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-gear-fill me-1"></i>Proceso
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" asp-controller="Orden" asp-action="Index">Órdenes</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bar-chart-fill me-1"></i>Reportes
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" asp-controller="Reporte" asp-action="GraficoVentas">Gráfico Ventas</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-people me-1"></i>Seguridad
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" asp-controller="Usuario" asp-action="Index">Usuarios</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="rounded-circle me-2"
-                             src="~/images/profile.png"
-                             alt="Perfil"
-                             width="32" height="32" />
-                        <span class="d-none d-sm-inline">
-                            Invitado
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                <!-- User Menu -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @@click="open = !open" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-muted transition-colors">
+                        <img src="~/images/profile.png" alt="Profile" class="w-8 h-8 rounded-full border-2 border-primary">
+                        <span class="hidden md:block text-foreground text-sm font-medium">Invitado</span>
+                        <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <div x-show="open" 
+                         @@click.away="open = false"
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-2xl py-1 z-50"
+                         style="display: none;">
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
-                            <li><a class="dropdown-item" asp-controller="Login" asp-action="LogOff">Salir</a></li>
+                            <a asp-controller="Login" asp-action="LogOff" class="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors">
+                                <i class="bi bi-box-arrow-right mr-2"></i>Salir
+                            </a>
                         }
                         else
                         {
-                            <li><a class="dropdown-item" asp-controller="Login" asp-action="Index">Ingresar</a></li>
+                            <a asp-controller="Login" asp-action="Index" class="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors">
+                                <i class="bi bi-box-arrow-in-right mr-2"></i>Ingresar
+                            </a>
                         }
-                    </ul>
-                </li>
-            </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
+
+<!-- Secondary Navigation -->
+<nav class="bg-muted/50 border-b border-border backdrop-blur-sm">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-center space-x-1 py-3">
+            <a asp-controller="Home" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-house-door mr-2"></i>Inicio
+            </a>
+            <a asp-controller="Subasta" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-hammer mr-2"></i>Subastas Activas
+            </a>
+            <a asp-controller="Camiseta" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                </svg>
+                Catálogo
+            </a>
+            <a asp-controller="Equipo" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-shield mr-2"></i>Equipos
+            </a>
+            <a asp-controller="MisOfertas" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-bookmark-star mr-2"></i>Mis Ofertas
+            </a>
+            <a asp-controller="User" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-people mr-2"></i>Usuarios
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Alpine.js for dropdown functionality -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

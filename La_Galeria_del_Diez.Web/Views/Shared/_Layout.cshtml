@@ -1,91 +1,50 @@
 ﻿<!doctype html>
-<html lang="es" data-bs-theme="light">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>@ViewData["Title"] - Librería</title>
+    <title>@ViewData["Title"] - La Galería del Diez</title>
 
-    <!-- Preconnect (mejora carga CDN) -->
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://code.jquery.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
-    <!-- Bootstrap 5.3.8 -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          crossorigin="anonymous">
-
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
+    <!-- Tailwind CSS con colores -->
+    <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+
     <!-- jQuery UI CSS -->
-    <link rel="stylesheet"
-          href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
-    <!-- Multi-select (depende de Bootstrap + jQuery) -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.2/css/bootstrap-multiselect.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- SweetAlert2 (LibMan) -->
+    <!-- SweetAlert2 -->
     <link rel="stylesheet" href="~/lib/sweetalert2/dist/sweetalert2.min.css" />
 
-    <!-- Tus estilos -->
+    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Libreria.Web.styles.css" asp-append-version="true" />
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-body">
+<body class="flex flex-col min-h-screen bg-background text-foreground">
 
-    <!-- Accesibilidad: salto a contenido -->
-    <a class="visually-hidden-focusable position-absolute top-0 start-0 p-2 bg-body border rounded"
-       href="#mainContent">
-        Saltar al contenido
-    </a>
-
-    <header class="sticky-top">
+    <!-- Navbar -->
+    <header>
         @await Html.PartialAsync("_Menu")
     </header>
 
-    <main id="mainContent" class="flex-grow-1">
-        <div class="container py-3">
-            @RenderBody()
-        </div>
+    <!-- Main Content -->
+    <main class="flex-grow">
+        @RenderBody()
     </main>
 
-    <footer class="mt-auto border-top">
-        <div class="container py-3 small text-muted d-flex flex-column flex-md-row gap-2 justify-content-between align-items-md-center">
-            <div>
-                &copy; @DateTime.Now.Year - Libreria
-            </div>
-            <div>
-                <a class="link-secondary text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">
-                    Privacidad
-                </a>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer -->
+    @await Html.PartialAsync("_Footer")
 
-    <!-- Scripts (orden recomendado) -->
-    <!-- jQuery (es necesario para jQuery UI / multiselect / unobtrusive) -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" crossorigin="anonymous"></script>
-
-    <!-- Bootstrap JS 5.3.8 (no requiere jQuery) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
-    <!-- jQuery UI -->
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-
-    <!-- Ajax unobtrusive -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.min.js"
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- Multi-select -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.2/js/bootstrap-multiselect.min.js"
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- SweetAlert -->
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.js"></script>
 
     <!-- SWEETALERT NOTIFICATION -->
@@ -93,9 +52,7 @@
     {
         var notificacion = TempData["Notificacion"] ?? ViewBag.Notificacion;
         <script type="text/javascript">
-
             const payload = @Html.Raw(notificacion);
-
             if (payload) {
                 Swal.fire(payload);
             }
@@ -103,7 +60,6 @@
     }
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

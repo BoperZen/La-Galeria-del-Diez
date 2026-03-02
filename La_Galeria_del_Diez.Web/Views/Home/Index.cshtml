@@ -1,142 +1,276 @@
 ﻿@{
-    ViewData["Title"] = "Inicio";
+    ViewData["Title"] = "Inicio - Subastas de Camisetas";
 }
 
-<section class="py-5 text-center bg-light rounded-3 mb-4 shadow-sm">
-    <div class="container">
-        <h1 class="display-5 fw-bold mb-3">
-            Bienvenido a la Librería Virtual
-        </h1>
+<!-- Hero Section con Imagen de Fondo -->
+<section class="relative h-[700px] overflow-hidden">
+    <!-- Background Image Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/80 z-10"></div>
+    
+    <!-- Imagen de fondo -->
+    <div class="absolute inset-0 bg-cover bg-center opacity-30" 
+         style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1920');">
+    </div>
 
-        <p class="lead text-muted mb-4">
-            Explora autores, libros y reportes con una interfaz clara y moderna.
-        </p>
+    <!-- Contenido del Hero -->
+    <div class="relative z-20 container mx-auto my-2 px-4 h-full flex items-center pb-4 pt-4">
+        <div class="max-w-3xl ">
+            <div class="inline-flex items-center px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium mb-6">
+                <span class="relative flex h-2 w-2 mr-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Subastas en vivo
+            </div>
+            
+            <h1 class="text-6xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+                Camisetas<br/>
+                <span class="text-primary">Legendarias</span><br/>
+                a tu Alcance
+            </h1>
+            
+            <p class="text-xl text-muted-foreground mb-8 leading-relaxed">
+                Participa en subastas exclusivas de camisetas de los más grandes equipos y jugadores del mundo. 
+                Autenticidad garantizada.
+            </p>
 
-        @if (ViewBag.Id != null)
-        {
-            <span class="badge text-bg-primary fs-6 px-3 py-2">
-                Identificador activo: @ViewBag.Id
-            </span>
-        }
+            <div class="flex flex-wrap gap-4">
+                <a asp-controller="Subasta" asp-action="Index" 
+                   class="inline-flex items-center px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all duration-200 font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105">
+                    <i class="bi bi-hammer mr-3"></i>
+                    Ver Subastas Activas
+                </a>
+                <a asp-controller="Camiseta" asp-action="Index" 
+                   class="inline-flex items-center px-8 py-4 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200 font-bold text-lg">
+                    <i class="bi bi-collection mr-3"></i>
+                    Explorar Catálogo
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-border">
+                <div>
+                    <div class="text-3xl font-bold text-primary">1,234</div>
+                    <div class="text-sm text-muted-foreground">Camisetas Vendidas</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-primary">45</div>
+                    <div class="text-sm text-muted-foreground">Subastas Activas</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-primary">890</div>
+                    <div class="text-sm text-muted-foreground">Usuarios Activos</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- CAROUSEL -->
-<div id="carruselHome" class="carousel slide mb-5 shadow rounded overflow-hidden" data-bs-ride="carousel">
-
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carruselHome" data-bs-slide-to="0"
-                class="active" aria-current="true" aria-label="Imagen 1"></button>
-        <button type="button" data-bs-target="#carruselHome" data-bs-slide-to="1"
-                aria-label="Imagen 2"></button>
-        <button type="button" data-bs-target="#carruselHome" data-bs-slide-to="2"
-                aria-label="Imagen 3"></button>
-    </div>
-
-    <div class="carousel-inner">
-
-        <div class="carousel-item active">
-            <img src="~/images/slide-1.jpg" class="d-block w-100 object-fit-cover" style="height:460px;" loading="lazy" alt="Libros en estantería">
-            <div class="carousel-caption bg-dark bg-opacity-50 p-3 rounded-3">
-                <h5 class="fw-bold">Bienvenido a tu biblioteca digital</h5>
-                <p>Explora contenido organizado y accesible.</p>
+<!-- Subastas Destacadas -->
+<section class="py-16 bg-background">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h2 class="text-4xl font-bold text-foreground mb-2">Subastas Destacadas</h2>
+                <p class="text-muted-foreground">Las camisetas más codiciadas del momento</p>
             </div>
-        </div>
-
-        <div class="carousel-item">
-            <img src="~/images/slide-2.jpg" class="d-block w-100 object-fit-cover" style="height:460px;" loading="lazy" alt="Autores destacados">
-            <div class="carousel-caption bg-dark bg-opacity-50 p-3 rounded-3">
-                <h5 class="fw-bold">Autores destacados</h5>
-                <p>Conoce los creadores detrás de cada obra.</p>
-            </div>
-        </div>
-
-        <div class="carousel-item">
-            <img src="~/images/slide-3.png" class="d-block w-100 object-fit-cover" style="height:460px;" loading="lazy" alt="Reportes de ventas y estadísticas">
-            <div class="carousel-caption bg-dark bg-opacity-50 p-3 rounded-3">
-                <h5 class="fw-bold">Reportes y estadísticas</h5>
-                <p>Obtén reportes claros para tomar mejores decisiones.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Controles -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#carruselHome" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-        <span class="visually-hidden">Anterior</span>
-    </button>
-
-    <button class="carousel-control-next" type="button" data-bs-target="#carruselHome" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-        <span class="visually-hidden">Siguiente</span>
-    </button>
-
-</div>
-
-<!-- ACCESOS RÁPIDOS -->
-<section class="container mb-5">
-    <h2 class="h4 fw-bold mb-4 text-center">Accesos rápidos</h2>
-
-    <div class="row g-4">
-
-        <!-- Autores -->
-        <div class="col-12 col-md-4">
-            <a asp-controller="Autor" asp-action="Index" class="text-decoration-none text-dark">
-                <div class="card h-100 shadow-sm border-0 hover-card">
-                    <div class="card-body text-center py-4">
-                        <i class="bi bi-people fs-1 mb-3 text-primary"></i>
-                        <h5 class="fw-semibold">Autores</h5>
-                        <p class="text-muted small">Gestiona y visualiza tus autores registrados.</p>
-                    </div>
-                </div>
+            <a asp-controller="Subasta" asp-action="Index" 
+               class="text-primary hover:text-secondary font-semibold flex items-center">
+                Ver todas
+                <i class="bi bi-arrow-right ml-2"></i>
             </a>
         </div>
 
-        <!-- Libros -->
-        <div class="col-12 col-md-4">
-            <a asp-controller="Libro" asp-action="Index" class="text-decoration-none text-dark">
-                <div class="card h-100 shadow-sm border-0 hover-card">
-                    <div class="card-body text-center py-4">
-                        <i class="bi bi-book-half fs-1 mb-3 text-success"></i>
-                        <h5 class="fw-semibold">Libros</h5>
-                        <p class="text-muted small">Consulta el catálogo de libros disponible.</p>
+        <!-- Grid de Camisetas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="relative h-64 bg-muted overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400" 
+                         alt="Camiseta" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute top-3 right-3">
+                        <span class="px-3 py-1 bg-red-500/90 text-white text-xs font-bold rounded-full">
+                            SUBASTA EN VIVO
+                        </span>
                     </div>
                 </div>
-            </a>
-        </div>
+                <div class="p-4">
+                    <div class="text-xs text-primary font-semibold mb-2">ARGENTINA</div>
+                    <h3 class="font-bold text-foreground mb-2 line-clamp-2">Camiseta Argentina 1986 - Maradona #10</h3>
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <div class="text-xs text-muted-foreground">Oferta actual</div>
+                            <div class="text-xl font-bold text-primary">$2,450</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-muted-foreground">Termina en</div>
+                            <div class="text-sm font-bold text-destructive">2h 15m</div>
+                        </div>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-all font-medium">
+                        Pujar Ahora
+                    </button>
+                </div>
+            </div>
 
-        <!-- Reportes -->
-        <div class="col-12 col-md-4">
-            <a asp-controller="Reporte" asp-action="GraficoVentas" class="text-decoration-none text-dark">
-                <div class="card h-100 shadow-sm border-0 hover-card">
-                    <div class="card-body text-center py-4">
-                        <i class="bi bi-bar-chart-line fs-1 mb-3 text-danger"></i>
-                        <h5 class="fw-semibold">Reportes</h5>
-                        <p class="text-muted small">Visualiza estadísticas y reportes de ventas.</p>
+            <!-- Card 2 -->
+            <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="relative h-64 bg-muted overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400" 
+                         alt="Camiseta" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute top-3 right-3">
+                        <span class="px-3 py-1 bg-green-500/90 text-white text-xs font-bold rounded-full">
+                            NUEVA
+                        </span>
                     </div>
                 </div>
-            </a>
-        </div>
+                <div class="p-4">
+                    <div class="text-xs text-accent font-semibold mb-2">BRASIL</div>
+                    <h3 class="font-bold text-foreground mb-2 line-clamp-2">Camiseta Brasil 2002 - Ronaldo #9</h3>
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <div class="text-xs text-muted-foreground">Oferta actual</div>
+                            <div class="text-xl font-bold text-primary">$1,890</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-muted-foreground">Termina en</div>
+                            <div class="text-sm font-bold text-destructive">5h 42m</div>
+                        </div>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-all font-medium">
+                        Pujar Ahora
+                    </button>
+                </div>
+            </div>
 
+            <!-- Card 3 -->
+            <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="relative h-64 bg-muted overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400" 
+                         alt="Camiseta" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </div>
+                <div class="p-4">
+                    <div class="text-xs text-primary font-semibold mb-2">ESPAÑA</div>
+                    <h3 class="font-bold text-foreground mb-2 line-clamp-2">Camiseta España 2010 - Iniesta #6</h3>
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <div class="text-xs text-muted-foreground">Oferta actual</div>
+                            <div class="text-xl font-bold text-primary">$3,200</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-muted-foreground">Termina en</div>
+                            <div class="text-sm font-bold text-destructive">1h 08m</div>
+                        </div>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-all font-medium">
+                        Pujar Ahora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="relative h-64 bg-muted overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400" 
+                         alt="Camiseta" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute top-3 right-3">
+                        <span class="px-3 py-1 bg-yellow-500/90 text-gray-900 text-xs font-bold rounded-full">
+                            FINALIZA PRONTO
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs text-accent font-semibold mb-2">FRANCIA</div>
+                    <h3 class="font-bold text-foreground mb-2 line-clamp-2">Camiseta Francia 1998 - Zidane #10</h3>
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <div class="text-xs text-muted-foreground">Oferta actual</div>
+                            <div class="text-xl font-bold text-primary">$2,750</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-muted-foreground">Termina en</div>
+                            <div class="text-sm font-bold text-destructive">45m</div>
+                        </div>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-all font-medium">
+                        Pujar Ahora
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-@section Scripts {
-    <script>
-        const myCarouselElement = document.querySelector('#carruselHome')
+<!-- Cómo Funciona -->
+<section class="py-16 bg-muted/30">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-foreground mb-4">¿Cómo Funciona?</h2>
+            <p class="text-muted-foreground text-lg">Participa en 3 simples pasos</p>
+        </div>
 
-        const carousel = new bootstrap.Carousel(myCarouselElement, {
-            interval: 3500,
-            pause: false,
-            ride: 'carousel'
-        })
-    </script>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-primary">
+                    <span class="text-3xl font-bold text-primary">1</span>
+                </div>
+                <h3 class="text-xl font-bold text-foreground mb-3">Explora el Catálogo</h3>
+                <p class="text-muted-foreground">
+                    Navega por nuestra colección exclusiva de camisetas auténticas de equipos y jugadores legendarios.
+                </p>
+            </div>
 
-    <style>
-        .hover-card:hover {
-            transform: translateY(-4px);
-            transition: all 0.25s ease;
-            box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
-        }
-    </style>
-}
+            <!-- Step 2 -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-accent">
+                    <span class="text-3xl font-bold text-accent">2</span>
+                </div>
+                <h3 class="text-xl font-bold text-foreground mb-3">Realiza tu Oferta</h3>
+                <p class="text-muted-foreground">
+                    Participa en la subasta colocando tu oferta. Observa en tiempo real las pujas de otros usuarios.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-primary">
+                    <span class="text-3xl font-bold text-primary">3</span>
+                </div>
+                <h3 class="text-xl font-bold text-foreground mb-3">¡Gana la Camiseta!</h3>
+                <p class="text-muted-foreground">
+                    Si eres el mejor postor al finalizar la subasta, la camiseta es tuya. Recíbela en tu puerta.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-20 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-5xl font-bold text-foreground mb-6">
+                ¿Listo para Empezar?
+            </h2>
+            <p class="text-xl text-muted-foreground mb-8">
+                Únete a miles de coleccionistas y consigue las camisetas más exclusivas del mundo deportivo.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a asp-controller="Login" asp-action="Index" 
+                   class="inline-flex items-center px-10 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all duration-200 font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105">
+                    Regístrate Ahora
+                    <i class="bi bi-arrow-right ml-3"></i>
+                </a>
+                <a asp-controller="Subasta" asp-action="Index" 
+                   class="inline-flex items-center px-10 py-4 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200 font-bold text-lg">
+                    Ver Subastas
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
