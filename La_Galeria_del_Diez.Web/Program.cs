@@ -81,9 +81,11 @@ builder.Services.AddControllersWithViews();
 // ======================= 
 //*** Repositories 
 builder.Services.AddTransient<IRepositoryUser, RepositoryUser>();
+builder.Services.AddTransient<IRepositoryObject, RepositoryObject>();
 
 //*** Services 
 builder.Services.AddTransient<IServiceUser, ServiceUser>();
+builder.Services.AddTransient<IServiceObject, ServiceObject>();
 
 // ======================= 
 // Configurar AutoMapper 
@@ -94,6 +96,11 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<UserProfile>();
     config.AddProfile<RolProfile>();
     config.AddProfile<StateProfile>();
+    config.AddProfile<AuctionableObjectProfile>();
+    config.AddProfile<AuctionProfile>();
+    config.AddProfile<BiddingProfile>();
+    config.AddProfile<ImageProfile>();
+    config.AddProfile<CategoryProfile>();
 });
 
 // ======================= 
