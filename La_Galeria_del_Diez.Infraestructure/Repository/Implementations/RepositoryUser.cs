@@ -19,9 +19,10 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             _context = context;
         }
 
-        public Task<User> FindByIdAsync(int id)
+        public async Task<User> FindByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var @object = await _context.Set<User>().FindAsync(id);
+            return @object!;
         }
 
         public async Task<ICollection<User>> ListAsync()
@@ -31,6 +32,24 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                           .Include(p => p.IdRolNavigation)
                                           .ToListAsync();
             return collection;
+        }
+
+        public async Task<int> Tally(int id)
+        {
+            var @object = await _context.Set<User>().FindAsync(id);
+            int count = 0;
+            if (@object.IdRol == 2)
+            {
+                count = await _context.Set<Auction>().Where(i => i.IdUser == id).CountAsync();
+            }
+            else
+            {
+                if (@object.IdRol == 3)
+                {
+                    count = await _context.Set<Bidding>().Where(i => i.IdUser == id).CountAsync();
+                }
+            }
+            return count;
         }
     }
 }

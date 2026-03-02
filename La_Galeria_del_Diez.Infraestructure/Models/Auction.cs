@@ -21,7 +21,7 @@ public partial class Auction
 
     public int IdObject { get; set; }
 
-    public int? AutionWinner { get; set; }
+    public int? AuctionWinner { get; set; }
 
     public virtual ICollection<Bidding> Bidding { get; set; } = new List<Bidding>();
 
@@ -30,4 +30,6 @@ public partial class Auction
     public virtual State IdStateNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
+
+    public virtual User Winner { get; set; } = null!;
 }

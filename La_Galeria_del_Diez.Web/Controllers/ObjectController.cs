@@ -5,18 +5,18 @@ using X.PagedList.Extensions;
 
 namespace La_Galeria_del_Diez.Web.Controllers
 {
-    public class UserController : Controller
+    public class ObjectController : Controller
     {
-        private readonly IServiceUser _serviceUser;
+        private readonly IServiceObject _serviceObject;
 
-        public UserController(IServiceUser serviceUser)
+        public ObjectController(IServiceObject serviceObject)
         {
-            _serviceUser = serviceUser;
+            _serviceObject = serviceObject;
         }
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
-            var collection = await _serviceUser.ListAsync();
+            var collection = await _serviceObject.ListAsync();
             //Paginado
             int pageNumber = page ?? 1;
             int pageSize = 5;
@@ -33,21 +33,21 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 if (id == null)
                 {
                     TempData["Notification"] = SweetAlertHelper.CrearNotificacion(
-                       "User not found",
-                       $"There is no User without an ID",
+                       "Object not found",
+                       $"There is no Object without an ID",
                        SweetAlertMessageType.error
                    );
                     return RedirectToAction("Index");
                 }
-                var @object = await _serviceUser.FindByIdAsync(id.Value);
+                var @object = await _serviceObject.FindByIdAsync(id.Value);
                 if (@object == null)
                 {
-                    throw new Exception("User not Found");
+                    throw new Exception("Object not Found");
 
                 }
                 ViewBag.Notificacion = SweetAlertHelper.CrearNotificacion(
                    "User Details",
-                   $"Showing User Information: {@object.Username}",
+                   $"Showing User Information: {@object.Name}",
                    SweetAlertMessageType.info
                );
                 return View(@object);

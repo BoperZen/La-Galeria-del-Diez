@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Error del Sistema";
+    ViewData["Title"] = "System Error";
     var errorModel = ViewBag.ErrorMessages as La_Galeria_del_Diez.Web.Models.ErrorMiddlewareViewModel;
 }
 
@@ -7,7 +7,7 @@
 {
     <div class="card mt-4">
         <div class="card-header bg-danger text-white">
-            <h4>Se ha presentado un error</h4>
+            <h4>An error has occurred</h4>
         </div>
 
         <div class="card-body">
@@ -29,7 +29,7 @@
             else
             {
                 <p class="text-muted">
-                    No hay mensajes disponibles para mostrar.
+                    No messages available to display.
                 </p>
             }
 
@@ -41,5 +41,5 @@
 }
 else
 {
-    <p class="text-warning">No se encontraron detalles del error.</p>
+    <p class="text-warning">No error details found.</p>
 }

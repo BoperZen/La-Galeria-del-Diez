@@ -11,34 +11,28 @@ using System.Threading.Tasks;
 
 namespace La_Galeria_del_Diez.Application.Services.Implementatios
 {
-    public class ServiceUser : IServiceUser
+    public class ServiceObject : IServiceObject
     {
-        private readonly IRepositoryUser _repository;
+        private readonly IRepositoryObject _repository;
         private readonly IMapper _mapper;
 
-        public ServiceUser(IRepositoryUser repository, IMapper mapper)
+        public ServiceObject(IRepositoryObject repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<UserDTO?> FindByIdAsync(int id)
+        public async Task<Auctionable_ObjectDTO?> FindByIdAsync(int id)
         {
             var @object = await _repository.FindByIdAsync(id);
-            var objectMapped = _mapper.Map<UserDTO>(@object);
-            objectMapped.Tally = await Tally(id);
+            var objectMapped = _mapper.Map<Auctionable_ObjectDTO>(@object);
             return objectMapped;
         }
 
-        public async Task<ICollection<UserDTO>> ListAsync()
+        public async Task<ICollection<Auctionable_ObjectDTO>> ListAsync()
         {
             var list = await _repository.ListAsync();
-            return _mapper.Map<ICollection<UserDTO>>(list);
-        }
-
-        private async Task<int> Tally(int id)
-        {
-            return await _repository.Tally(id);
+            return _mapper.Map<ICollection<Auctionable_ObjectDTO>>(list);
         }
     }
 }
