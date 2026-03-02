@@ -1,5 +1,4 @@
-﻿using La_Galeria_del_Diez.Infraestructure.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +15,5 @@ namespace La_Galeria_del_Diez.Application.DTOs
         public DateTime RegistrationDate { get; set; }
 
         public int IdObject { get; set; }
-
-        public virtual AuctionableObject IdObjectNavigation { get; set; } = null!;
     }
 }
