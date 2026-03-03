@@ -20,5 +20,6 @@ namespace La_Galeria_del_Diez.Application.DTOs
         public List<ImageDTO> Images { get; set; } = new List<ImageDTO>();
         public List<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
         public StateDTO State { get; set; } = new StateDTO();
+        public UserDTO Seller { get; set; } = new UserDTO();
     }
 }

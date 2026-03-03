@@ -24,6 +24,8 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             var @object = await _context.Set<AuctionableObject>()
                                         .Include(o => o.Image)
                                         .Include(o => o.IdCategory)
+                                        .Include(o => o.IdUserNavigation)
+                                        .Include(o => o.IdStateNavigation)
                                         .Include(o => o.Auction)
                                             .ThenInclude(a => a.IdUserNavigation)
                                         .Include(o => o.Auction)
