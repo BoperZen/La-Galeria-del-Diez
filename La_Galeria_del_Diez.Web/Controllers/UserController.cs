@@ -13,14 +13,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
         {
             _serviceUser = serviceUser;
         }
+        
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
             var collection = await _serviceUser.ListAsync();
             //Paginado
             int pageNumber = page ?? 1;
-            int pageSize = 5;
-
+            int pageSize = 10;
 
             //Cantidad de elementos por página
             return View(collection.ToPagedList(pageNumber, pageSize));
@@ -32,30 +32,42 @@ namespace La_Galeria_del_Diez.Web.Controllers
             {
                 if (id == null)
                 {
-                    TempData["Notification"] = SweetAlertHelper.CrearNotificacion(
-                       "User not found",
-                       $"There is no User without an ID",
+                    TempData["Notificacion"] = SweetAlertHelper.CrearNotificacion(
+                       "Usuario no encontrado",
+                       "No se proporcionó un ID de usuario",
                        SweetAlertMessageType.error
                    );
                     return RedirectToAction("Index");
                 }
-                var @object = await _serviceUser.FindByIdAsync(id.Value);
-                if (@object == null)
+                
+                var user = await _serviceUser.FindByIdAsync(id.Value);
+                
+                if (user == null)
                 {
-                    throw new Exception("User not Found");
-
+                    TempData["Notificacion"] = SweetAlertHelper.CrearNotificacion(
+                       "Usuario no encontrado",
+                       $"No existe un usuario con el ID: {id}",
+                       SweetAlertMessageType.error
+                   );
+                    return RedirectToAction("Index");
                 }
+                
                 ViewBag.Notificacion = SweetAlertHelper.CrearNotificacion(
-                   "User Details",
-                   $"Showing User Information: {@object.Username}",
+                   "Detalle de Usuario",
+                   $"Mostrando información de: {user.Username}",
                    SweetAlertMessageType.info
                );
-                return View(@object);
-
+               
+                return View(user);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                TempData["Notificacion"] = SweetAlertHelper.CrearNotificacion(
+                   "Error",
+                   $"Ocurrió un error al cargar los detalles: {ex.Message}",
+                   SweetAlertMessageType.error
+               );
+                return RedirectToAction("Index");
             }
         }
     }
