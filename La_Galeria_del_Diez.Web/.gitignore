@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+
+# Tailwind CSS output (generado automáticamente - no versionar)
+wwwroot/css/output.css
+
+# NPM logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Package lock (opcional, descomentar si no quieres versionarlo)
+# package-lock.json
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

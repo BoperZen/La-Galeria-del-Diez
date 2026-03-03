@@ -1,0 +1,343 @@
+<!-- ========================================
+     BOTONES
+     ======================================== -->
+
+<!-- Botón Primary -->
+<button class="inline-flex items-center px-6 py-2.5 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+    Botón Primary
+</button>
+
+<!-- Botón Accent -->
+<button class="inline-flex items-center px-6 py-2.5 bg-accent text-accent-foreground rounded-md hover:opacity-90 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+    Botón Accent
+</button>
+
+<!-- Botón Secondary -->
+<button class="inline-flex items-center px-6 py-2.5 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+    Botón Secondary
+</button>
+
+<!-- Botón Destructivo -->
+<button class="inline-flex items-center px-6 py-2.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 font-medium shadow-sm">
+    Eliminar
+</button>
+
+<!-- Botón Outline -->
+<button class="inline-flex items-center px-6 py-2.5 border-2 border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-all duration-200 font-medium">
+    Botón Outline
+</button>
+
+<!-- Botón Ghost -->
+<button class="inline-flex items-center px-6 py-2.5 text-primary hover:bg-primary/10 rounded-md transition-colors duration-200 font-medium">
+    Botón Ghost
+</button>
+
+<!-- Botón con Icono -->
+<button class="inline-flex items-center px-6 py-2.5 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-all duration-200 font-medium shadow-sm">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    Crear Nuevo
+</button>
+
+
+<!-- ========================================
+     BADGES / PILLS
+     ======================================== -->
+
+<!-- Badge Primary -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+    Primary
+</span>
+
+<!-- Badge Accent -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent">
+    Accent
+</span>
+
+<!-- Badge Success -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+    Activo
+</span>
+
+<!-- Badge Error -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+    Inactivo
+</span>
+
+<!-- Badge Warning -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+    Pendiente
+</span>
+
+<!-- Badge Info -->
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+    Info
+</span>
+
+
+<!-- ========================================
+     CARDS
+     ======================================== -->
+
+<!-- Card Básica -->
+<div class="bg-card rounded-lg shadow-md p-6 border border-border">
+    <h3 class="text-xl font-bold text-foreground mb-2">Título</h3>
+    <p class="text-muted-foreground">Contenido de la tarjeta</p>
+</div>
+
+<!-- Card con Header -->
+<div class="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
+    <div class="bg-muted px-6 py-4 border-b border-border">
+        <h3 class="text-xl font-bold text-foreground">Título de la Card</h3>
+    </div>
+    <div class="p-6">
+        <p class="text-muted-foreground">Contenido de la tarjeta</p>
+    </div>
+</div>
+
+<!-- Card con Footer -->
+<div class="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
+    <div class="p-6">
+        <h3 class="text-xl font-bold text-foreground mb-2">Título</h3>
+        <p class="text-muted-foreground">Contenido de la tarjeta</p>
+    </div>
+    <div class="bg-muted px-6 py-4 border-t border-border flex justify-end gap-2">
+        <button class="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
+            Cancelar
+        </button>
+        <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity">
+            Guardar
+        </button>
+    </div>
+</div>
+
+
+<!-- ========================================
+     ALERTS
+     ======================================== -->
+
+<!-- Alert Info -->
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-start">
+        <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+        </svg>
+        <div class="flex-1">
+            <h4 class="text-sm font-medium text-blue-800">Información</h4>
+            <p class="text-sm text-blue-700 mt-1">Este es un mensaje informativo.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Success -->
+<div class="bg-green-50 border border-green-200 rounded-lg p-4">
+    <div class="flex items-start">
+        <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <div class="flex-1">
+            <h4 class="text-sm font-medium text-green-800">Éxito</h4>
+            <p class="text-sm text-green-700 mt-1">Operación completada exitosamente.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Warning -->
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+    <div class="flex items-start">
+        <svg class="w-5 h-5 text-yellow-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+        </svg>
+        <div class="flex-1">
+            <h4 class="text-sm font-medium text-yellow-800">Advertencia</h4>
+            <p class="text-sm text-yellow-700 mt-1">Ten cuidado con esta acción.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Error -->
+<div class="bg-red-50 border border-red-200 rounded-lg p-4">
+    <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+        <div class="flex-1">
+            <h4 class="text-sm font-medium text-red-800">Error</h4>
+            <p class="text-sm text-red-700 mt-1">Ocurrió un error al procesar la solicitud.</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================
+     FORMS
+     ======================================== -->
+
+<!-- Input con Label -->
+<div class="mb-4">
+    <label class="block text-sm font-medium text-foreground mb-2">
+        Nombre de usuario
+    </label>
+    <input type="text" 
+           class="w-full px-4 py-2 border border-border rounded-md bg-card text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
+           placeholder="Ingresa tu nombre de usuario">
+</div>
+
+<!-- Textarea -->
+<div class="mb-4">
+    <label class="block text-sm font-medium text-foreground mb-2">
+        Descripción
+    </label>
+    <textarea rows="4" 
+              class="w-full px-4 py-2 border border-border rounded-md bg-card text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
+              placeholder="Escribe una descripción..."></textarea>
+</div>
+
+<!-- Select -->
+<div class="mb-4">
+    <label class="block text-sm font-medium text-foreground mb-2">
+        Categoría
+    </label>
+    <select class="w-full px-4 py-2 border border-border rounded-md bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all">
+        <option>Selecciona una opción</option>
+        <option>Opción 1</option>
+        <option>Opción 2</option>
+        <option>Opción 3</option>
+    </select>
+</div>
+
+<!-- Checkbox -->
+<div class="flex items-center mb-4">
+    <input type="checkbox" 
+           class="w-4 h-4 text-primary border-border rounded focus:ring-2 focus:ring-ring">
+    <label class="ml-2 text-sm text-foreground">
+        Acepto los términos y condiciones
+    </label>
+</div>
+
+<!-- Radio Buttons -->
+<div class="space-y-2 mb-4">
+    <div class="flex items-center">
+        <input type="radio" name="option" 
+               class="w-4 h-4 text-primary border-border focus:ring-2 focus:ring-ring">
+        <label class="ml-2 text-sm text-foreground">Opción 1</label>
+    </div>
+    <div class="flex items-center">
+        <input type="radio" name="option" 
+               class="w-4 h-4 text-primary border-border focus:ring-2 focus:ring-ring">
+        <label class="ml-2 text-sm text-foreground">Opción 2</label>
+    </div>
+</div>
+
+
+<!-- ========================================
+     TABLA
+     ======================================== -->
+
+<div class="overflow-x-auto rounded-md border border-border">
+    <table class="w-full border-collapse">
+        <thead class="bg-muted">
+            <tr>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-foreground border-b border-border">ID</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-foreground border-b border-border">Nombre</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-foreground border-b border-border">Email</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold text-foreground border-b border-border">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-border bg-card">
+            <tr class="hover:bg-muted/50 transition-colors duration-150">
+                <td class="px-4 py-3 text-sm text-foreground">1</td>
+                <td class="px-4 py-3 text-sm text-foreground font-medium">Juan Pérez</td>
+                <td class="px-4 py-3 text-sm text-muted-foreground">juan@example.com</td>
+                <td class="px-4 py-3 text-sm text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <button class="px-3 py-1.5 bg-accent text-accent-foreground rounded text-xs font-medium hover:opacity-90">
+                            Editar
+                        </button>
+                        <button class="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700">
+                            Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- ========================================
+     LOADING SPINNER
+     ======================================== -->
+
+<!-- Spinner Small -->
+<div class="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+
+<!-- Spinner Medium -->
+<div class="inline-block w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+
+<!-- Spinner Large -->
+<div class="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+
+
+<!-- ========================================
+     BREADCRUMBS
+     ======================================== -->
+
+<nav class="flex mb-4" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+            <a href="#" class="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+                Inicio
+            </a>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <a href="#" class="ml-1 text-sm font-medium text-muted-foreground hover:text-primary md:ml-2">Usuarios</a>
+            </div>
+        </li>
+        <li aria-current="page">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="ml-1 text-sm font-medium text-foreground md:ml-2">Lista</span>
+            </div>
+        </li>
+    </ol>
+</nav>
+
+
+<!-- ========================================
+     PAGINATION
+     ======================================== -->
+
+<nav class="flex items-center justify-between border-t border-border px-4 sm:px-0 mt-6">
+    <div class="flex w-0 flex-1">
+        <a href="#" class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary">
+            <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Anterior
+        </a>
+    </div>
+    <div class="hidden md:flex">
+        <a href="#" class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary">1</a>
+        <a href="#" class="inline-flex items-center border-t-2 border-primary px-4 pt-4 text-sm font-medium text-primary">2</a>
+        <a href="#" class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary">3</a>
+    </div>
+    <div class="flex w-0 flex-1 justify-end">
+        <a href="#" class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary">
+            Siguiente
+            <svg class="ml-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</nav>

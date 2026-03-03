@@ -1,0 +1,33 @@
+{
+  "name": "la-galeria-del-diez",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de librería con Tailwind CSS y tema Vault-Tec",
+  "author": "La Galería del Diez Team",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx @tailwindcss/cli -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css --watch",
+    "build": "npx @tailwindcss/cli -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css --minify",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "tailwindcss": "^4.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BoperZen/La-Galeria-del-Diez"
+  },
+  "keywords": [
+    "tailwindcss",
+    "aspnet-core",
+    "razor-pages",
+    "vault-tec",
+    "libreria"
+  ]
+}
