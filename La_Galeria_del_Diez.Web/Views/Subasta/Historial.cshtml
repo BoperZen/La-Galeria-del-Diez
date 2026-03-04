@@ -1,0 +1,213 @@
+@model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
+
+@{
+    ViewData["Title"] = "Historial de Pujas";
+    var objectName = ViewBag.ObjectName as string;
+    var objectId = (int)ViewBag.ObjectId;
+}
+
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="flex items-center space-x-4 mb-8">
+            <a asp-controller="Object" asp-action="Details" asp-route-id="@objectId" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
+                <i class="bi bi-arrow-left text-xl"></i>
+            </a>
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold text-foreground flex items-center">
+                    <i class="bi bi-clock-history text-primary mr-3"></i>
+                    Historial de Pujas
+                </h1>
+                <p class="text-muted-foreground mt-1">@objectName</p>
+            </div>
+        </div>
+
+        <!-- Resumen de la Subasta -->
+        <div class="bg-card rounded-xl shadow-lg border border-border p-6 mb-8">
+            <div class="flex items-center gap-6">
+                <img src="@Url.Action("GetImage", "Image", new { objectId = objectId })" 
+                     alt="@objectName" 
+                     class="w-24 h-24 object-cover rounded-lg"
+                     loading="lazy">
+                
+                <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <p class="text-xs text-muted-foreground mb-1">Total Pujas</p>
+                        <p class="text-2xl font-bold text-primary">@Model.Biddings.Count</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-muted-foreground mb-1">Precio Base</p>
+                        <p class="text-xl font-bold text-foreground">${Model.BasePrice:N0}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-muted-foreground mb-1">Oferta Más Alta</p>
+                        <p class="text-xl font-bold text-green-400">
+                            $@(Model.Biddings.Any() ? Model.Biddings.Max(b => b.Amount).ToString("N0") : Model.BasePrice.ToString("N0"))
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-muted-foreground mb-1">Estado</p>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent/20 text-accent border border-accent/30">
+                            @Model.State.Description
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Biddings.Any())
+        {
+            <!-- Timeline de Pujas -->
+            <div class="space-y-4">
+                @foreach (var (bid, index) in Model.Biddings.Select((b, i) => (b, i)))
+                {
+                    var isHighest = bid.Amount == Model.Biddings.Max(b => b.Amount);
+                    var isFirst = index == 0;
+                    
+                    <div class="bg-card rounded-xl shadow-lg border @(isHighest ? "border-primary" : "border-border") overflow-hidden transition-all hover:shadow-xl @(isHighest ? "ring-2 ring-primary/30" : "")">
+                        <div class="flex items-center p-6">
+                            <!-- Timeline dot -->
+                            <div class="flex flex-col items-center mr-6">
+                                <div class="w-12 h-12 rounded-full @(isHighest ? "bg-primary" : "bg-muted") flex items-center justify-center text-white font-bold border-4 @(isHighest ? "border-primary/30" : "border-muted")">
+                                    @if (isHighest)
+                                    {
+                                        <i class="bi bi-trophy-fill text-xl"></i>
+                                    }
+                                    else
+                                    {
+                                        <span>@(index + 1)</span>
+                                    }
+                                </div>
+                                @if (!isFirst)
+                                {
+                                    <div class="w-0.5 h-8 bg-border mt-2"></div>
+                                }
+                            </div>
+
+                            <!-- Contenido de la puja -->
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                                <!-- Usuario -->
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                        <span class="text-primary font-bold text-lg">
+                                            U
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-muted-foreground">Usuario</p>
+                                        <p class="font-semibold text-foreground">Usuario #@bid.IdUser</p>
+                                    </div>
+                                </div>
+
+                                <!-- Monto -->
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-1">Monto Ofertado</p>
+                                    <p class="text-2xl font-bold @(isHighest ? "text-primary" : "text-foreground")">
+                                        $@bid.Amount.ToString("N0")
+                                    </p>
+                                </div>
+
+                                <!-- Fecha y Hora -->
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-1">Fecha y Hora</p>
+                                    <p class="font-semibold text-foreground">
+                                        <i class="bi bi-calendar mr-1"></i>
+                                        @bid.RegistrationDate.ToString("dd/MM/yyyy")
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        <i class="bi bi-clock mr-1"></i>
+                                        @bid.RegistrationDate.ToString("HH:mm:ss")
+                                    </p>
+                                </div>
+
+                                <!-- Método de Pago -->
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-1">Método de Pago</p>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-muted text-foreground">
+                                        <i class="bi bi-credit-card mr-1"></i>
+                                        @bid.PaymentMethod
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Badge de ganador -->
+                            @if (isHighest)
+                            {
+                                <div class="ml-4">
+                                    <div class="px-4 py-2 bg-primary rounded-lg text-primary-foreground font-bold text-sm">
+                                        <i class="bi bi-star-fill mr-1"></i>
+                                        Mejor Oferta
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="mt-8 bg-card rounded-xl shadow-lg border border-border p-6">
+                <h3 class="text-lg font-bold text-foreground mb-4 flex items-center">
+                    <i class="bi bi-bar-chart text-primary mr-2"></i>
+                    Estadísticas de la Subasta
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-muted/30 rounded-lg p-4">
+                        <p class="text-xs text-muted-foreground mb-1">Promedio de Pujas</p>
+                        <p class="text-xl font-bold text-foreground">
+                            $@Model.Biddings.Average(b => b.Amount).ToString("N0")
+                        </p>
+                    </div>
+                    <div class="bg-muted/30 rounded-lg p-4">
+                        <p class="text-xs text-muted-foreground mb-1">Incremento Total</p>
+                        <p class="text-xl font-bold text-green-400">
+                            $@((Model.Biddings.Max(b => b.Amount) - Model.BasePrice).ToString("N0"))
+                        </p>
+                    </div>
+                    <div class="bg-muted/30 rounded-lg p-4">
+                        <p class="text-xs text-muted-foreground mb-1">Primera Puja</p>
+                        <p class="text-sm font-semibold text-foreground">
+                            @Model.Biddings.OrderBy(b => b.RegistrationDate).First().RegistrationDate.ToString("dd/MM HH:mm")
+                        </p>
+                    </div>
+                    <div class="bg-muted/30 rounded-lg p-4">
+                        <p class="text-xs text-muted-foreground mb-1">Última Puja</p>
+                        <p class="text-sm font-semibold text-foreground">
+                            @Model.Biddings.OrderByDescending(b => b.RegistrationDate).First().RegistrationDate.ToString("dd/MM HH:mm")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="bg-card rounded-xl shadow-lg border border-border p-16 text-center">
+                <div class="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="bi bi-inbox text-4xl text-muted-foreground"></i>
+                </div>
+                <h3 class="text-xl font-bold text-foreground mb-2">No hay pujas registradas</h3>
+                <p class="text-muted-foreground mb-6">Esta subasta aún no tiene ofertas</p>
+                <a asp-controller="Object" asp-action="Details" asp-route-id="@objectId"
+                   class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                    <i class="bi bi-hammer mr-2"></i>
+                    Ser el Primero en Pujar
+                </a>
+            </div>
+        }
+
+        <!-- Botones de navegación -->
+        <div class="mt-8 flex justify-between">
+            <a asp-controller="Object" asp-action="Details" asp-route-id="@objectId"
+               class="inline-flex items-center px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                <i class="bi bi-arrow-left mr-2"></i>
+                Volver al Objeto
+            </a>
+            <a asp-controller="Subasta" asp-action="Index"
+               class="inline-flex items-center px-6 py-3 bg-accent text-accent-foreground rounded-lg hover:opacity-90 transition-all font-semibold">
+                <i class="bi bi-list mr-2"></i>
+                Ver Todas las Subastas
+            </a>
+        </div>
+    </div>
+</div>

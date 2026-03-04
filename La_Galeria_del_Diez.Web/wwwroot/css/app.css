@@ -57,15 +57,21 @@
 
 @layer base {
   html {
+    height: 100%;
     background-color: #0A0E11;
     overflow-x: hidden;
-    scrollbar-gutter: stable both-edges;
   }
   
   body {
+    min-height: 100%;
     background-color: #0A0E11;
     color: #E8E9EA;
     overflow-x: hidden;
+  }
+  
+  /* Asegurar que los enlaces funcionen */
+  a {
+    cursor: pointer;
   }
   
   /* Scrollbar oscuro personalizado */

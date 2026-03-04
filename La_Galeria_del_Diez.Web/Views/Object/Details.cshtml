@@ -1,24 +1,62 @@
-﻿@model La_Galeria_del_Diez.Application.DTOs.Auctionable_ObjectDTO
+@model La_Galeria_del_Diez.Application.DTOs.Auctionable_ObjectDTO
 
 @{
     ViewData["Title"] = Model.Name;
 }
 
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-6">
-            @if (Model.Images != null && Model.Images.Any())
-            {
-                <div id="objectImagesCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-                    <div class="carousel-inner rounded shadow">
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Breadcrumb -->
+        <div class="mb-4">
+            <a asp-controller="Object" asp-action="Index" 
+               class="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+                <i class="bi bi-arrow-left mr-2"></i>
+                Volver a Objetos
+            </a>
+        </div>
+
+        <!-- T�tulo -->
+        <h1 class="text-xl font-bold text-foreground mb-4">@Model.Name</h1>
+
+        <!-- BLOQUE SUPERIOR: Imagen (izq) + Info (der) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            
+            <!-- IZQUIERDA: Imagen principal + miniaturas (1 de 3 columnas) -->
+            <div class="lg:col-span-1">
+                <!-- Imagen principal -->
+                <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
+                    @if (Model.Images.Any())
+                    {
+                        <div class="bg-muted w-full h-48">
+                            <img id="mainImageSrc" 
+                                 src="@Url.Action("GetImage", "Image", new { objectId = Model.Id })" 
+                                 alt="@Model.Name" 
+                                 class="w-full h-full object-contain">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="bg-muted w-full h-48 flex items-center justify-center">
+                            <i class="bi bi-image text-3xl text-muted-foreground"></i>
+                        </div>
+                    }
+                </div>
+
+                <!-- Miniaturas -->
+                @if (Model.Images.Any())
+                {
+                    <div class="flex gap-2 flex-wrap">
                         @for (int i = 0; i < Model.Images.Count; i++)
                         {
-                            <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Images[i].Data)"
-                                     class="d-block w-100"
-                                     style="max-height:400px;object-fit:contain;"
-                                     alt="Image @(i + 1)" />
-                            </div>
+                            var img = Model.Images[i];
+                            var thumbUrl = Url.Action("ByImageId", "Image", new { imageId = img.Id, objectId = Model.Id });
+                            var isFirst = i == 0;
+                            
+                            <button type="button"
+                                    onclick="changeMainImage('@thumbUrl', this)" 
+                                    class="thumbnail-btn w-12 h-12 rounded border-2 transition-all overflow-hidden @(isFirst ? "border-primary" : "border-border hover:border-primary")">
+                                <img src="@thumbUrl" alt="Imagen @(i + 1)" class="w-full h-full object-cover">
+                            </button>
                         }
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#objectImagesCarousel" data-bs-slide="prev">
@@ -57,70 +95,124 @@
                 {
                     @foreach (var cat in Model.Categories)
                     {
-                        <span class="badge bg-primary me-1">@cat.Description</span>
+                        <div class="flex items-start gap-3 py-2 border-b border-border">
+                            <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                                <i class="bi bi-tags-fill text-foreground text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-muted-foreground mb-1">Categor�as</div>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach (var cat in Model.Categories)
+                                    {
+                                        <span class="px-2 py-1 bg-muted text-foreground rounded text-xs font-medium border border-border">
+                                            @cat.Description
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     }
-                }
-                else
+
+                    <!-- Descripci�n -->
+                    <div class="flex items-start gap-3 py-2">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-file-text text-foreground text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground mb-1">Descripci�n</div>
+                            <p class="text-foreground leading-relaxed text-sm">
+                                @(Model.Description ?? "No hay descripci�n disponible.")
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BLOQUE: Historial de Subastas -->
+                @if (Model.Auctions.Any())
                 {
-                    <span class="text-muted">No categories</span>
+                    <div class="bg-card rounded-lg border border-border overflow-hidden">
+                        <div class="bg-muted/30 px-4 py-2.5 border-b border-border">
+                            <h2 class="text-sm font-bold text-foreground flex items-center">
+                                <i class="bi bi-clock-history mr-2 text-primary text-xs"></i>
+                                Historial de Subastas
+                            </h2>
+                        </div>
+
+                        <div class="divide-y divide-border max-h-32 overflow-y-auto">
+                            @foreach (var auction in Model.Auctions.OrderByDescending(a => a.StartDate))
+                            {
+                                var isActive = auction.EndDate > DateTime.Now;
+                                var timeRemaining = auction.EndDate - DateTime.Now;
+                                var statusClass = isActive ? "bg-green-500" : "bg-gray-400";
+                                var statusText = isActive ? "ACTIVA" : "FINALIZADA";
+                                var bidCount = auction.Biddings?.Count ?? 0;
+                                var currentPrice = auction.Biddings?.Any() == true 
+                                    ? auction.Biddings.Max(b => b.Amount) 
+                                    : auction.BasePrice;
+
+                                <div class="p-3 hover:bg-muted/10 transition-colors">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="@statusClass text-white px-2.5 py-1 rounded-full text-xs font-bold">
+                                            @statusText
+                                        </span>
+                                        @if (isActive && timeRemaining.TotalHours < 24)
+                                        {
+                                            <span class="text-red-500 text-xs font-bold">
+                                                <i class="bi bi-exclamation-triangle mr-1"></i>
+                                                �Quedan @((int)timeRemaining.TotalHours)h @timeRemaining.Minutes m!
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-4 mb-3">
+                                        <div>
+                                            <div class="text-xs text-muted-foreground">Inicio</div>
+                                            <div class="font-semibold text-foreground text-sm">@auction.StartDate.ToString("dd/MM/yyyy")</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-muted-foreground">Fin</div>
+                                            <div class="font-semibold text-foreground text-sm">@auction.EndDate.ToString("dd/MM/yyyy")</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-muted-foreground">Precio</div>
+                                            <div class="text-base font-bold text-primary">$@currentPrice.ToString("N0")</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-muted-foreground">Pujas</div>
+                                            <div class="font-semibold text-foreground text-base">@bidCount</div>
+                                        </div>
+                                        <div>
+                                            <a asp-controller="Subasta" asp-action="Details" asp-route-id="@auction.Id"
+                                               class="inline-flex items-center px-3 py-1.5 bg-primary text-primary-foreground rounded hover:bg-secondary transition-all font-semibold text-xs whitespace-nowrap">
+                                                <i class="bi bi-eye mr-1.5"></i>
+                                                Ver subasta
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 }
             </div>
         </div>
     </div>
-
-    <hr class="my-4" />
-
-    <h4 class="mb-3">Auctions</h4>
-    @if (Model.Auctions != null && Model.Auctions.Any())
-    {
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Base Price</th>
-                        <th>Min Increment</th>
-                        <th>State Id</th>
-                        <th>UserName</th>
-                        <th>Winner</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var auction in Model.Auctions)
-                    {
-                        <tr>
-                            <td>@auction.StartDate.ToString("yyyy-MM-dd")</td>
-                            <td>@auction.EndDate.ToString("yyyy-MM-dd")</td>
-                            <td>@auction.BasePrice.ToString("C")</td>
-                            <td>@auction.MinIncrement.ToString("C")</td>
-                            <td>@auction.State.Description</td>
-                            <td>@auction.IdUserNavegation.Username</td>
-                            @if(auction.Winner != null){
-                            <td>@auction.Winner.Username</td>
-                            }
-                            else{
-                                <td><span class="text-muted">No winner yet</span></td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No auctions for this object.
-        </div>
-    }
-
-    <div class="mt-4">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2">
-            <i class="bi bi-pencil-square"></i> Edit
-        </a>
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to List
-        </a>
-    </div>
 </div>
+
+<script>
+    function changeMainImage(src, btn) {
+        const img = document.getElementById('mainImageSrc');
+        if (img) img.src = src;
+        
+        document.querySelectorAll('.thumbnail-btn').forEach(b => {
+            b.classList.remove('border-primary');
+            b.classList.add('border-border');
+        });
+        
+        if (btn) {
+            btn.classList.remove('border-border');
+            btn.classList.add('border-primary');
+        }
+    }
+</script>

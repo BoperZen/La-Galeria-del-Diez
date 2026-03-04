@@ -1,4 +1,4 @@
-﻿<nav class="bg-card border-b border-border sticky top-0 z-50 shadow-lg">
+﻿<nav class="bg-card border-b border-border z-50 shadow-lg">
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
@@ -49,7 +49,7 @@
                          x-transition:leave="transition ease-in duration-75"
                          x-transition:leave-start="transform opacity-100 scale-100"
                          x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-2xl py-1 z-50"
+                         class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-2xl py-1 z-[60]"
                          style="display: none;">
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
@@ -74,30 +74,18 @@
 <nav class="bg-muted/50 border-b border-border backdrop-blur-sm">
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-center space-x-1 py-3">
-            <a asp-controller="Home" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+            <a href="/" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
                 <i class="bi bi-house-door mr-2"></i>Inicio
             </a>
-            <a asp-controller="Subasta" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-hammer mr-2"></i>Subastas Activas
+            <a href="/Subasta" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-hammer mr-2"></i>Subastas
             </a>
-            <a asp-controller="Camiseta" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-                </svg>
-                Catálogo
+            <a href="/Object" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-box-seam mr-2"></i>Objetos
             </a>
-            <a asp-controller="Equipo" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-shield mr-2"></i>Equipos
-            </a>
-            <a asp-controller="MisOfertas" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-bookmark-star mr-2"></i>Mis Ofertas
-            </a>
-            <a asp-controller="User" asp-action="Index" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+            <a href="/User" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
                 <i class="bi bi-people mr-2"></i>Usuarios
             </a>
         </div>
     </div>
 </nav>
-
-<!-- Alpine.js for dropdown functionality -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
