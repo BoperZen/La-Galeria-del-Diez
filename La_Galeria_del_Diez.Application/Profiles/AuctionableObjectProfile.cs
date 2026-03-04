@@ -12,6 +12,8 @@ namespace La_Galeria_del_Diez.Application.Profiles
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Image))
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IdCategory))
                 .ForMember(dest => dest.Auctions, opt => opt.MapFrom(src => src.Auction))
+                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.IdStateNavigation))
+                .ForMember(dest => dest.Seller, opt => opt.MapFrom(src => src.IdUserNavigation))
                 .ReverseMap();
         }
     }

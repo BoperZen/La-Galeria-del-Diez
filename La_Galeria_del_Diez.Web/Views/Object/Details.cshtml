@@ -15,7 +15,7 @@
             </a>
         </div>
 
-        <!-- Título -->
+        <!-- Tï¿½tulo -->
         <h1 class="text-xl font-bold text-foreground mb-4">@Model.Name</h1>
 
         <!-- BLOQUE SUPERIOR: Imagen (izq) + Info (der) -->
@@ -59,56 +59,48 @@
                             </button>
                         }
                     </div>
-                }
-            </div>
-
-            <!-- DERECHA: Información del objeto (2 de 3 columnas) -->
-            <div class="lg:col-span-2 flex flex-col gap-4 h-full">
-                <!-- Bloque de información principal -->
-                <div class="bg-card rounded-lg border border-border p-4">
-                    
-                    <!-- Estado -->
-                    <div class="flex items-center gap-3 py-2 border-b border-border">
-                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-check-circle-fill text-foreground text-xs"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-muted-foreground">Estado</div>
-                            <div class="font-semibold text-foreground text-sm">@Model.State.Description</div>
-                        </div>
-                    </div>
-
-                    <!-- Condición -->
-                    <div class="flex items-center gap-3 py-2 border-b border-border">
-                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-star-fill text-foreground text-xs"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-muted-foreground">Condición</div>
-                            <div class="font-semibold text-foreground text-sm">@(Model.Condition ?? "Nueva")</div>
-                        </div>
-                    </div>
-
-                    <!-- Fecha de registro -->
-                    <div class="flex items-center gap-3 py-2 border-b border-border">
-                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-calendar-check text-foreground text-xs"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-muted-foreground">Fecha de registro</div>
-                            <div class="font-semibold text-foreground text-sm">@Model.RegistrationDate.ToString("dd/MM/yyyy")</div>
-                        </div>
-                    </div>
-
-                    <!-- Categorías -->
-                    @if (Model.Categories.Any())
+                    <button class="carousel-control-prev" type="button" data-bs-target="#objectImagesCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#objectImagesCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-image"></i> No images available
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <h2 class="mb-2">@Model.Name</h2>
+            <p class="text-muted mb-1">@Model.Description</p>
+            <dl class="row small">
+                <dt class="col-sm-4">Condition</dt>
+                <dd class="col-sm-8">@Model.Condition</dd>
+                <dt class="col-sm-4">Registration Date</dt>
+                <dd class="col-sm-8">@Model.RegistrationDate.ToString("yyyy-MM-dd")</dd>
+                <dt class="col-sm-4">State</dt>
+                <dd class="col-sm-8">@Model.State.Description</dd>
+                <dt class="col-sm-4">Seller</dt>
+                <dd class="col-sm-8">@Model.Seller.Username</dd>
+            </dl>
+            <div class="mb-2">
+                <strong>Categories:</strong>
+                @if (Model.Categories != null && Model.Categories.Any())
+                {
+                    @foreach (var cat in Model.Categories)
                     {
                         <div class="flex items-start gap-3 py-2 border-b border-border">
                             <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                                 <i class="bi bi-tags-fill text-foreground text-xs"></i>
                             </div>
                             <div class="flex-1">
-                                <div class="text-xs text-muted-foreground mb-1">Categorías</div>
+                                <div class="text-xs text-muted-foreground mb-1">Categorï¿½as</div>
                                 <div class="flex flex-wrap gap-1.5">
                                     @foreach (var cat in Model.Categories)
                                     {
@@ -121,15 +113,15 @@
                         </div>
                     }
 
-                    <!-- Descripción -->
+                    <!-- Descripciï¿½n -->
                     <div class="flex items-start gap-3 py-2">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-file-text text-foreground text-xs"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-xs text-muted-foreground mb-1">Descripción</div>
+                            <div class="text-xs text-muted-foreground mb-1">Descripciï¿½n</div>
                             <p class="text-foreground leading-relaxed text-sm">
-                                @(Model.Description ?? "No hay descripción disponible.")
+                                @(Model.Description ?? "No hay descripciï¿½n disponible.")
                             </p>
                         </div>
                     </div>
@@ -168,7 +160,7 @@
                                         {
                                             <span class="text-red-500 text-xs font-bold">
                                                 <i class="bi bi-exclamation-triangle mr-1"></i>
-                                                ¡Quedan @((int)timeRemaining.TotalHours)h @timeRemaining.Minutes m!
+                                                ï¿½Quedan @((int)timeRemaining.TotalHours)h @timeRemaining.Minutes m!
                                             </span>
                                         }
                                     </div>
