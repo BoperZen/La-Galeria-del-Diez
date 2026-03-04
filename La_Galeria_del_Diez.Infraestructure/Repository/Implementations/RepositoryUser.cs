@@ -21,7 +21,9 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
 
         public async Task<User> FindByIdAsync(int id)
         {
-            var @object = await _context.Set<User>().FindAsync(id);
+            var @object = await _context.Set<User>()
+                                        .Include(p => p.IdRolNavigation)
+                                        .FirstOrDefaultAsync(u => u.Id == id);
             return @object!;
         }
 

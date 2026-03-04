@@ -13,6 +13,7 @@ namespace La_Galeria_del_Diez.Application.Profiles
                 .ForMember(dest => dest.Winner, opt => opt.MapFrom(src => src.Winner))
                 .ForMember(dest => dest.Biddings, opt => opt.MapFrom(src => src.Bidding))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.IdStateNavigation))
+                .ForMember(dest => dest.Object, opt => opt.MapFrom(src => src.IdObjectNavigation))
                 .ReverseMap();
         }
     }

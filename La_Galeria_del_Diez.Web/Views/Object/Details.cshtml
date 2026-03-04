@@ -24,20 +24,21 @@
             <!-- IZQUIERDA: Imagen principal + miniaturas (1 de 3 columnas) -->
             <div class="lg:col-span-1">
                 <!-- Imagen principal -->
-                <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
-                    @if (Model.Images.Any())
+                <div class="rounded-top overflow-hidden bg-body-tertiary" style="height: 360px;">
+                    @* Si hay imagen, la mostramos; si no, placeholder *@
+                    @if (@Model.Images != null && @Model.Images.Count > 0)
                     {
-                        <div class="bg-muted w-full h-48">
-                            <img id="mainImageSrc" 
-                                 src="@Url.Action("GetImage", "Image", new { objectId = Model.Id })" 
-                                 alt="@Model.Name" 
-                                 class="w-full h-full object-contain">
-                        </div>
+                        <img id="mainImageSrc"
+                             class="w-100 h-100 object-fit-cover rounded-top"
+                             src="data:image/jpeg;base64,@Convert.ToBase64String(@Model.Images.FirstOrDefault().Data)"
+                             alt="Shirt @Model.Name"
+                             loading="lazy" />
                     }
                     else
                     {
-                        <div class="bg-muted w-full h-48 flex items-center justify-center">
-                            <i class="bi bi-image text-3xl text-muted-foreground"></i>
+                        <div class="d-flex flex-column justify-content-center align-items-center text-muted">
+                            <i class="bi bi-image fs-1"></i>
+                            <span class="small">Sin imagen</span>
                         </div>
                     }
                 </div>
@@ -49,13 +50,14 @@
                         @for (int i = 0; i < Model.Images.Count; i++)
                         {
                             var img = Model.Images[i];
-                            var thumbUrl = Url.Action("ByImageId", "Image", new { imageId = img.Id, objectId = Model.Id });
                             var isFirst = i == 0;
-                            
+
                             <button type="button"
-                                    onclick="changeMainImage('@thumbUrl', this)" 
+                                    onclick="changeMainImage('data:image/jpeg;base64,@Convert.ToBase64String(img.Data)', this)"
                                     class="thumbnail-btn w-12 h-12 rounded border-2 transition-all overflow-hidden @(isFirst ? "border-primary" : "border-border hover:border-primary")">
-                                <img src="@thumbUrl" alt="Imagen @(i + 1)" class="w-full h-full object-cover">
+                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(img.Data)"
+                                     alt="Imagen @(i + 1)"
+                                     class="w-full h-full object-cover">
                             </button>
                         }
                     </div>

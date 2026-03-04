@@ -6,22 +6,21 @@ namespace La_Galeria_del_Diez.Web.Controllers
 {
     public class SubastaController : Controller
     {
-        private readonly IServiceObject _serviceObject;
+        private readonly IServiceAuction _serviceAuction;
 
-        public SubastaController(IServiceObject serviceObject)
+        public SubastaController(IServiceAuction serviceAuction)
         {
-            _serviceObject = serviceObject;
+            _serviceAuction = serviceAuction;
         }
         
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
-            var collection = await _serviceObject.ListAsync();
+            var collection = await _serviceAuction.ListAsync();
             
-            // Filtrar solo objetos con subastas activas (fecha no vencida)
+            // Filtrar solo subastas activas (fecha no vencida)
             var activeAuctions = collection
-                .Where(o => o.Auctions != null && 
-                           o.Auctions.Any(a => a.EndDate > DateTime.Now))
+                .Where(a => a.EndDate > DateTime.Now)
                 .ToList();
             
             int pageNumber = page ?? 1;
@@ -32,11 +31,11 @@ namespace La_Galeria_del_Diez.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Finalizadas(int? page)
         {
-            var collection = await _serviceObject.ListAsync();
+            var collection = await _serviceAuction.ListAsync();
             
-            // Filtrar solo objetos con subastas finalizadas
+            // Filtrar solo subastas finalizadas
             var finishedAuctions = collection
-                .Where(o => o.Auctions != null && o.Auctions.Any(a => a.EndDate <= DateTime.Now))
+                .Where(a => a.EndDate <= DateTime.Now)
                 .ToList();
             
             int pageNumber = page ?? 1;
@@ -52,28 +51,13 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction("Index");
             }
             
-            // Buscar todos los objetos
-            var allObjects = await _serviceObject.ListAsync();
-            
-            // Buscar el objeto que contiene la subasta con el ID especificado
-            var objectWithAuction = allObjects
-                .FirstOrDefault(o => o.Auctions != null && o.Auctions.Any(a => a.Id == id.Value));
-            
-            if (objectWithAuction == null)
-            {
-                return RedirectToAction("Index");
-            }
-            
-            // Obtener la subasta específica
-            var auction = objectWithAuction.Auctions.FirstOrDefault(a => a.Id == id.Value);
+            var auction = await _serviceAuction.FindByIdAsync(id.Value);
             
             if (auction == null)
             {
                 return RedirectToAction("Index");
             }
             
-            // Pasar tanto el objeto como la subasta a la vista
-            ViewBag.AuctionObject = objectWithAuction;
             return View(auction);
         }
     }

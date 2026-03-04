@@ -13,7 +13,9 @@ namespace La_Galeria_del_Diez.Application.Profiles
     {
         public UserProfile()
         {
-            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<User, UserDTO>()
+                .ForMember(dest => dest.IdRolNavigation, opt => opt.MapFrom(src => src.IdRolNavigation))
+                .ReverseMap();
         }
     }
 }

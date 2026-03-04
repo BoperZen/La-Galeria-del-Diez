@@ -1,20 +1,10 @@
 @model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
 
 @{
-    ViewData["Title"] = "Detalles de la Subasta";
-    var auctionObject = ViewBag.AuctionObject as La_Galeria_del_Diez.Application.DTOs.Auctionable_ObjectDTO;
+ViewData["Title"] = "Detalles de la Subasta";
+var auctionObject = Model.Object;
     
-    if (auctionObject == null)
-    {
-        <div class="min-h-screen bg-background py-8">
-            <div class="container mx-auto px-4 max-w-6xl">
-                <p class="text-destructive">No se encontró el objeto asociado a esta subasta.</p>
-            </div>
-        </div>
-        return;
-    }
-    
-    var isActive = Model.EndDate > DateTime.Now;
+var isActive = Model.EndDate > DateTime.Now;
     var timeRemaining = Model.EndDate - DateTime.Now;
     var totalBids = Model.Biddings?.Count ?? 0;
     var currentPrice = Model.Biddings?.Any() == true 

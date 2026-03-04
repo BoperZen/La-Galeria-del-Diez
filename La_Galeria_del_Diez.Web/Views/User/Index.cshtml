@@ -61,13 +61,7 @@
                                 Usuario
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-foreground uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-foreground uppercase tracking-wider">
                                 Rol
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-foreground uppercase tracking-wider">
-                                Fecha Registro
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-foreground uppercase tracking-wider">
                                 Estado
@@ -92,17 +86,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-muted-foreground">
-                                    <i class="bi bi-envelope mr-2"></i>@item.Email
-                                </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary border border-primary/30">
                                         <i class="bi bi-shield-check mr-1"></i>
                                         @item.IdRolNavigation.Description
                                     </span>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-muted-foreground">
-                                    <i class="bi bi-calendar mr-2"></i>@item.RegistrationDate.ToString("dd/MM/yyyy")
                                 </td>
                                 <td class="px-6 py-4">
                                     @if (item.UserState == true)

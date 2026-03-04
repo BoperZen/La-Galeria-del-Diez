@@ -33,5 +33,9 @@ namespace La_Galeria_del_Diez.Application.DTOs
         public UserDTO? Winner { get; set; }
 
         public StateDTO State { get; set; } = new StateDTO();
+
+        public Auctionable_ObjectDTO Object { get; set; } = new Auctionable_ObjectDTO();
+
+        public int Count { get; set; }
     }
 }

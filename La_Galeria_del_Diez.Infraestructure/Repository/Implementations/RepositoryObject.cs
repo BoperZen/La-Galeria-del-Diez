@@ -79,5 +79,13 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             
             return collection;
         }
+
+        public async Task<int> CountBidding(int id)
+        {
+            int count = await _context.Set<Bidding>()
+                              .Where(b => b.IdAuction == id)
+                              .CountAsync();
+            return count;
+        }
     }
 }
