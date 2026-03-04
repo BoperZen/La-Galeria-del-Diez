@@ -69,6 +69,11 @@
     overflow-x: hidden;
   }
   
+  /* Asegurar que los enlaces funcionen */
+  a {
+    cursor: pointer;
+  }
+  
   /* Scrollbar oscuro personalizado */
   * {
     scrollbar-width: thin;

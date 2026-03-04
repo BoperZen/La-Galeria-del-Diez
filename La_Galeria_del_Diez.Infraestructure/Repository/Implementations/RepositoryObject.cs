@@ -24,14 +24,25 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             var @object = await _context.Set<AuctionableObject>()
                                         .Include(o => o.Image)
                                         .Include(o => o.IdCategory)
-                                        .Include(o => o.Auction)
-                                            .ThenInclude(a => a.IdUserNavigation)
-                                        .Include(o => o.Auction)
-                                            .ThenInclude(a => a.Winner)
-                                        .Include(o => o.Auction)
-                                            .ThenInclude(a => a.IdStateNavigation)
+                                        .Include(o => o.IdStateNavigation)
+                                        .Include(o => o.IdUserNavigation)
+                                        .AsSplitQuery()
                                         .AsNoTracking()
                                         .FirstOrDefaultAsync(o => o.Id == id);
+            
+            if (@object != null)
+            {
+                // Cargar auctions separadamente
+                @object.Auction = await _context.Set<Auction>()
+                    .Where(a => a.IdObject == id)
+                    .Include(a => a.IdUserNavigation)
+                    .Include(a => a.IdStateNavigation)
+                    .Include(a => a.Bidding)
+                        .ThenInclude(b => b.IdUserNavigation)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            
             return @object!;
         }
 
@@ -39,8 +50,33 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
         {
             var collection = await _context.Set<AuctionableObject>()
                                         .Include(x => x.Image)
+                                        .Include(x => x.IdCategory)
+                                        .Include(x => x.IdStateNavigation)
+                                        .Include(x => x.IdUserNavigation)
+                                        .AsSplitQuery()
                                         .AsNoTracking()
                                         .ToListAsync();
+            
+            // Cargar auctions en una query separada para evitar cartesian product
+            var objectIds = collection.Select(x => x.Id).ToList();
+            
+            if (objectIds.Any())
+            {
+                var auctions = await _context.Set<Auction>()
+                    .Where(a => objectIds.Contains(a.IdObject))
+                    .Include(a => a.IdUserNavigation)
+                    .Include(a => a.IdStateNavigation)
+                    .Include(a => a.Bidding)
+                    .AsNoTracking()
+                    .ToListAsync();
+                
+                // Asignar auctions manualmente
+                foreach (var obj in collection)
+                {
+                    obj.Auction = auctions.Where(a => a.IdObject == obj.Id).ToList();
+                }
+            }
+            
             return collection;
         }
     }
