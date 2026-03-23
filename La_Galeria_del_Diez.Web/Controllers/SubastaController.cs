@@ -12,17 +12,17 @@ namespace La_Galeria_del_Diez.Web.Controllers
         {
             _serviceAuction = serviceAuction;
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
             var collection = await _serviceAuction.ListAsync();
-            
+
             // Filtrar solo subastas activas (fecha no vencida)
             var activeAuctions = collection
                 .Where(a => a.EndDate > DateTime.Now)
                 .ToList();
-            
+
             int pageNumber = page ?? 1;
             int pageSize = 10;
             return View(activeAuctions.ToPagedList(pageNumber, pageSize));
@@ -32,12 +32,12 @@ namespace La_Galeria_del_Diez.Web.Controllers
         public async Task<IActionResult> Finalizadas(int? page)
         {
             var collection = await _serviceAuction.ListAsync();
-            
+
             // Filtrar solo subastas finalizadas
             var finishedAuctions = collection
                 .Where(a => a.EndDate <= DateTime.Now)
                 .ToList();
-            
+
             int pageNumber = page ?? 1;
             int pageSize = 10;
             return View(finishedAuctions.ToPagedList(pageNumber, pageSize));
@@ -50,15 +50,20 @@ namespace La_Galeria_del_Diez.Web.Controllers
             {
                 return RedirectToAction("Index");
             }
-            
+
             var auction = await _serviceAuction.FindByIdAsync(id.Value);
-            
+
             if (auction == null)
             {
                 return RedirectToAction("Index");
             }
-            
+
             return View(auction);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
     }
 }

@@ -1,0 +1,145 @@
+﻿@model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
+
+@{
+    ViewData["Title"] = "Crear Subasta";
+}
+
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Breadcrumb -->
+        <div class="mb-4">
+            <a asp-controller="Subasta" asp-action="Index"
+               class="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+                <i class="bi bi-arrow-left mr-2"></i>
+                Volver a Subastas
+            </a>
+        </div>
+
+        <!-- Título -->
+        <h1 class="text-xl font-bold text-foreground mb-4">Crear Subasta</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <!-- IZQUIERDA: Objeto seleccionado (preview visual) -->
+            <div class="lg:col-span-1">
+                <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
+                    <div class="bg-muted w-full h-48 flex items-center justify-center flex-col gap-2 text-muted-foreground">
+                        <i class="bi bi-image text-3xl"></i>
+                        <span class="text-xs">Vista previa del objeto</span>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-lg border border-border p-3">
+                    <div class="text-xs text-muted-foreground mb-1">Objeto seleccionado</div>
+                    <div class="font-semibold text-foreground text-sm">Nombre del objeto (placeholder)</div>
+                </div>
+            </div>
+
+            <!-- DERECHA: Datos de la subasta -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+                <div class="bg-card rounded-lg border border-border p-4">
+                    <h2 class="text-sm font-bold text-foreground mb-3 flex items-center">
+                        <i class="bi bi-gavel mr-2 text-primary text-xs"></i>
+                        Datos de la Subasta
+                    </h2>
+
+                    <!-- Selector de objeto (desplegable con recuadros) -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-2 block">Objeto</label>
+                        <details class="group bg-muted/30 rounded border border-border">
+                            <summary class="list-none cursor-pointer px-3 py-2 flex items-center justify-between text-sm text-foreground">
+                                <span>Seleccionar objeto</span>
+                                <i class="bi bi-chevron-down text-xs transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="p-3 border-t border-border">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    <button type="button" class="p-2 rounded border border-border bg-card hover:border-primary text-left transition-colors">
+                                        <div class="h-16 bg-muted rounded mb-2 flex items-center justify-center">
+                                            <i class="bi bi-image text-muted-foreground"></i>
+                                        </div>
+                                        <div class="text-xs text-foreground font-medium">Objeto 1</div>
+                                    </button>
+                                    <button type="button" class="p-2 rounded border border-border bg-card hover:border-primary text-left transition-colors">
+                                        <div class="h-16 bg-muted rounded mb-2 flex items-center justify-center">
+                                            <i class="bi bi-image text-muted-foreground"></i>
+                                        </div>
+                                        <div class="text-xs text-foreground font-medium">Objeto 2</div>
+                                    </button>
+                                    <button type="button" class="p-2 rounded border border-border bg-card hover:border-primary text-left transition-colors">
+                                        <div class="h-16 bg-muted rounded mb-2 flex items-center justify-center">
+                                            <i class="bi bi-image text-muted-foreground"></i>
+                                        </div>
+                                        <div class="text-xs text-foreground font-medium">Objeto 3</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Fecha Inicio -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Fecha de Inicio</label>
+                        <input type="datetime-local"
+                               class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Fecha Cierre -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Fecha de Cierre</label>
+                        <input type="datetime-local"
+                               class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Precio Base -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Precio Base</label>
+                        <input type="number" placeholder="0"
+                               class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Incremento Mínimo -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Incremento Mínimo</label>
+                        <input type="number" placeholder="0"
+                               class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Estado inicial visual -->
+                    <div class="flex items-center gap-3 py-2 border-b border-border">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-check-circle-fill text-foreground text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground">Estado inicial</div>
+                            <div class="font-semibold text-foreground text-sm">Activa (no editable)</div>
+                        </div>
+                    </div>
+
+                    <!-- Usuario visual -->
+                    <div class="flex items-center gap-3 py-2">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-person-fill text-foreground text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground">Usuario</div>
+                            <div class="font-semibold text-foreground text-sm">Nombre del usuario (no editable)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones visuales -->
+                <div class="flex justify-end gap-3">
+                    <a asp-action="Index"
+                       class="inline-flex items-center px-5 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                        <i class="bi bi-x-circle mr-2"></i>
+                        Cancelar
+                    </a>
+                    <button type="button"
+                            class="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                        <i class="bi bi-check2-circle mr-2"></i>
+                        Guardar Subasta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
