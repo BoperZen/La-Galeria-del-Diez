@@ -1,0 +1,137 @@
+﻿@model La_Galeria_del_Diez.Application.DTOs.Auctionable_ObjectDTO
+
+@{
+    ViewData["Title"] = "Crear Objeto";
+}
+
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Breadcrumb -->
+        <div class="mb-4">
+            <a asp-controller="Object" asp-action="Index"
+               class="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+                <i class="bi bi-arrow-left mr-2"></i>
+                Volver a Objetos
+            </a>
+        </div>
+
+        <!-- Título -->
+        <h1 class="text-xl font-bold text-foreground mb-4">Crear Objeto</h1>
+
+        <!-- BLOQUE SUPERIOR: Imagen (izq) + Info (der) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+
+            <!-- IZQUIERDA: Imagen principal + miniaturas (1 de 3 columnas) -->
+            <div class="lg:col-span-1">
+                <!-- Imagen principal visual -->
+                <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
+                    <div class="bg-muted w-full h-48 flex items-center justify-center flex-col gap-2 text-muted-foreground">
+                        <i class="bi bi-image text-3xl"></i>
+                        <span class="text-xs">Vista previa de imagen principal</span>
+                    </div>
+                </div>
+
+                <!-- Miniaturas visuales -->
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <div class="w-12 h-12 rounded border-2 border-primary bg-muted flex items-center justify-center">
+                        <i class="bi bi-image text-xs text-muted-foreground"></i>
+                    </div>
+                    <div class="w-12 h-12 rounded border-2 border-border bg-muted flex items-center justify-center">
+                        <i class="bi bi-image text-xs text-muted-foreground"></i>
+                    </div>
+                    <div class="w-12 h-12 rounded border-2 border-border bg-muted flex items-center justify-center">
+                        <i class="bi bi-image text-xs text-muted-foreground"></i>
+                    </div>
+                </div>
+
+                <!-- Cargar imágenes (visual) -->
+                <div class="bg-card rounded-lg border border-border p-3">
+                    <label class="text-xs text-muted-foreground mb-2 block">Imágenes</label>
+                    <input type="file" multiple
+                           class="w-full text-sm text-foreground bg-muted/30 border border-border rounded px-3 py-2 file:mr-3 file:px-3 file:py-1 file:rounded file:border-0 file:bg-primary file:text-primary-foreground" />
+                    <p class="text-xs text-muted-foreground mt-2">Selecciona una o más imágenes</p>
+                </div>
+            </div>
+
+            <!-- DERECHA: Información del objeto (2 de 3 columnas) -->
+            <div class="lg:col-span-2 flex flex-col gap-4 h-full">
+                <div class="bg-card rounded-lg border border-border p-4">
+
+                    <!-- Nombre -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Nombre</label>
+                        <input type="text" placeholder="Nombre del objeto"
+                               class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Descripción</label>
+                        <textarea rows="3" placeholder="Descripción del objeto"
+                                  class="w-full text-sm text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring"></textarea>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Categoría</label>
+                        <select class="w-full text-sm text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="">Seleccione categoría</option>
+                            <option>Camiseta de Jugador</option>
+                            <option>Camiseta Vintage</option>
+                            <option>Liga Española</option>
+                            <option>Clubes Históricos</option>
+                        </select>
+                    </div>
+
+                    <!-- Condición -->
+                    <div class="py-2 border-b border-border">
+                        <label class="text-xs text-muted-foreground mb-1 block">Condición</label>
+                        <select class="w-full text-sm text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="">Seleccione condición</option>
+                            <option>Nueva</option>
+                            <option>Muy Buena</option>
+                            <option>Buena</option>
+                            <option>Regular</option>
+                        </select>
+                    </div>
+
+                    <!-- Estado inicial (solo visual) -->
+                    <div class="flex items-center gap-3 py-2 border-b border-border">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-check-circle-fill text-foreground text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground">Estado inicial</div>
+                            <div class="font-semibold text-foreground text-sm">Activo (no editable)</div>
+                        </div>
+                    </div>
+
+                    <!-- Usuario (solo visual) -->
+                    <div class="flex items-center gap-3 py-2">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-person-fill text-foreground text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground">Usuario</div>
+                            <div class="font-semibold text-foreground text-sm">Nombre del usuario (no editable)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones visuales -->
+                <div class="flex justify-end gap-3">
+                    <a asp-action="Index"
+                       class="inline-flex items-center px-5 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                        <i class="bi bi-x-circle mr-2"></i>
+                        Cancelar
+                    </a>
+                    <button type="button"
+                            class="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                        <i class="bi bi-check2-circle mr-2"></i>
+                        Guardar Objeto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

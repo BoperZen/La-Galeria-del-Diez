@@ -39,5 +39,10 @@ namespace La_Galeria_del_Diez.Web.Controllers
             
             return View(obj);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }
