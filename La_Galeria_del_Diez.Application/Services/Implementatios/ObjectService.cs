@@ -34,5 +34,11 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             var list = await _repository.ListAsync();
             return _mapper.Map<ICollection<Auctionable_ObjectDTO>>(list);
         }
+
+        public async Task<ICollection<Auctionable_ObjectDTO>> ListAsyncNoAuction()
+        {
+            var list = await _repository.ListAsyncNoAuction();
+            return _mapper.Map<ICollection<Auctionable_ObjectDTO>>(list);
+        }
     }
 }

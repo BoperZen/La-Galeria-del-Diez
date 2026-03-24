@@ -10,6 +10,7 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
     public interface IServiceObject
     {
         Task<ICollection<Auctionable_ObjectDTO>> ListAsync();
+        Task<ICollection<Auctionable_ObjectDTO>> ListAsyncNoAuction();
         Task<Auctionable_ObjectDTO?> FindByIdAsync(int id);
     }
 }

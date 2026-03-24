@@ -29,7 +29,7 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                         .AsSplitQuery()
                                         .AsNoTracking()
                                         .FirstOrDefaultAsync(o => o.Id == id);
-            
+
             if (@object != null)
             {
                 // Cargar auctions separadamente
@@ -42,7 +42,7 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                     .AsNoTracking()
                     .ToListAsync();
             }
-            
+
             return @object!;
         }
 
@@ -56,10 +56,10 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                         .AsSplitQuery()
                                         .AsNoTracking()
                                         .ToListAsync();
-            
+
             // Cargar auctions en una query separada para evitar cartesian product
             var objectIds = collection.Select(x => x.Id).ToList();
-            
+
             if (objectIds.Any())
             {
                 var auctions = await _context.Set<Auction>()
@@ -69,14 +69,14 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                     .Include(a => a.Bidding)
                     .AsNoTracking()
                     .ToListAsync();
-                
+
                 // Asignar auctions manualmente
                 foreach (var obj in collection)
                 {
                     obj.Auction = auctions.Where(a => a.IdObject == obj.Id).ToList();
                 }
             }
-            
+
             return collection;
         }
 
@@ -86,6 +86,27 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                               .Where(b => b.IdAuction == id)
                               .CountAsync();
             return count;
+        }
+
+        public async Task<ICollection<AuctionableObject>> ListAsyncNoAuction()
+        {
+            var collection = await _context.Set<AuctionableObject>()
+                                        .Include(x => x.Image)
+                                        .Include(x => x.IdCategory)
+                                        .Include(x => x.IdStateNavigation)
+                                        .Include(x => x.IdUserNavigation)
+                                        .Where(x => x.IdState == 6)
+                                        .Where(x => !_context.Set<Auction>()
+                                            .Any(a => a.IdObject == x.Id &&
+                                                          (a.IdState == 1 ||
+                                                           a.IdState == 2 ||
+                                                           a.IdState == 5 ||
+                                                           a.IdState == 7 ||
+                                                           a.IdState == 6)))
+                                        .AsSplitQuery()
+                                        .AsNoTracking()
+                                        .ToListAsync();
+            return collection;
         }
     }
 }

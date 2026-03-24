@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper;
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Infraestructure.Models;
 
@@ -14,7 +15,11 @@ namespace La_Galeria_del_Diez.Application.Profiles
                 .ForMember(dest => dest.Biddings, opt => opt.MapFrom(src => src.Bidding))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.IdStateNavigation))
                 .ForMember(dest => dest.Object, opt => opt.MapFrom(src => src.IdObjectNavigation))
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.IdUserNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.Winner, opt => opt.Ignore())
+                .ForMember(dest => dest.IdStateNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.IdObjectNavigation, opt => opt.Ignore());
         }
     }
 }

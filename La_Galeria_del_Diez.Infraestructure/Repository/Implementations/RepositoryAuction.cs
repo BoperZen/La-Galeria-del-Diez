@@ -48,5 +48,11 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                            .ToListAsync();
             return collection;
         }
+
+        public async Task AddAsync(Auction auction)
+        {
+            _context.Set<Auction>().Add(auction);
+            await _context.SaveChangesAsync();
+        }
     }
 }

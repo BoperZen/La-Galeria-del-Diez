@@ -1,4 +1,5 @@
-﻿<!doctype html>
+﻿@using System.Text.Json
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -45,8 +46,35 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @{
+        var swalSuccess = TempData["SwalSuccess"] as string;
+        var swalError = ViewData["SwalError"] as string;
+    }
+    @if (!string.IsNullOrWhiteSpace(swalSuccess))
+    {
+        <script>
+            const swalSuccess = @Html.Raw(swalSuccess);
+            Swal.fire({
+                icon: swalSuccess.icon,
+                title: swalSuccess.title,
+                text: swalSuccess.text
+            });
+        </script>
+    }
+    @if (!string.IsNullOrWhiteSpace(swalError))
+    {
+        <script>
+            const swalError = @Html.Raw(swalError);
+            Swal.fire({
+                icon: swalError.icon,
+                title: swalError.title,
+                text: swalError.text
+            });
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

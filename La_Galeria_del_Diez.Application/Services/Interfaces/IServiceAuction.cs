@@ -11,5 +11,6 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
     {
         Task<ICollection<AuctionDTO>> ListAsync();
         Task<AuctionDTO?> FindByIdAsync(int id);
+        Task AddAsync(AuctionDTO dto);
     }
 }
