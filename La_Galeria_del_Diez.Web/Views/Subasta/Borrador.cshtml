@@ -1,9 +1,9 @@
-@model X.PagedList.IPagedList<La_Galeria_del_Diez.Application.DTOs.AuctionDTO>
+ï»¿@model X.PagedList.IPagedList<La_Galeria_del_Diez.Application.DTOs.AuctionDTO>
 @using X.PagedList
 @using X.PagedList.Mvc.Core
 
 @{
-    ViewData["Title"] = "Active Auctions";
+    ViewData["Title"] = "Draft Auctions";
 }
 
 <div class="min-h-screen bg-background py-8">
@@ -13,10 +13,10 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <h1 class="text-4xl font-bold text-foreground mb-2 flex items-center">
-                        <i class="bi bi-hammer text-primary mr-3"></i>
-                        Active Auctions
+                        <i class="bi bi-file-earmark-text text-primary mr-3"></i>
+                        Draft Auctions
                     </h1>
-                    <p class="text-muted-foreground">Place your bid before time runs out.</p>
+                    <p class="text-muted-foreground">Manage auctions saved as drafts before publishing.</p>
                     @if (ViewBag.Debug != null)
                     {
                         <p class="text-yellow-400 text-sm mt-2">DEBUG: @ViewBag.Debug</p>
@@ -28,10 +28,10 @@
                         <i class="bi bi-plus-circle mr-2"></i>
                         Create Auction
                     </a>
-                    <a asp-action="Borrador"
+                    <a asp-action="Index"
                        class="inline-flex items-center px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
-                        <i class="bi bi-file-earmark-text mr-2"></i>
-                        View Drafts
+                        <i class="bi bi-hammer mr-2"></i>
+                        View Active
                     </a>
                     <a asp-action="Finalizadas"
                        class="inline-flex items-center px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
@@ -55,7 +55,7 @@
                         <option>Sort by: Most recent</option>
                         <option>Price: Low to High</option>
                         <option>Price: High to Low</option>
-                        <option>Ended recently</option>
+                        <option>Start date</option>
                     </select>
                     <select class="px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                         <option>All categories</option>
@@ -69,16 +69,15 @@
 
         @if (Model.Any())
         {
-            <!-- Finished Auctions Grid -->
+            <!-- Draft Auctions Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="auctionsGrid">
                 @foreach (var auction in Model)
                 {
                     var obj = auction.Object;
                     var bidCount = auction.Biddings?.Count ?? 0;
-                    var finalPrice = auction.Biddings?.Any() == true
-                    ? auction.Biddings.Max(b => b.Amount)
-                    : auction.BasePrice;
-                    var isCanceled = auction.State.Description == "Cancelada";
+                    var currentPrice = auction.Biddings?.Any() == true
+                        ? auction.Biddings.Max(b => b.Amount)
+                        : auction.BasePrice;
 
                     <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 auction-card">
                         <!-- Image -->
@@ -87,7 +86,7 @@
                             {
                                 <img src="@Url.Action("GetImage", "Image", new { objectId = obj.Id })"
                                      alt="@obj.Name"
-                                     class="w-full h-full object-cover @(isCanceled ? "opacity-50 grayscale" : "")"
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                      loading="lazy">
                             }
                             else
@@ -96,99 +95,97 @@
                                     <i class="bi bi-image text-5xl text-muted-foreground"></i>
                                 </div>
                             }
-
-                            <!-- Badge de estado -->
+                            <!-- Draft badge -->
                             <div class="absolute top-3 right-3">
-                                @if (isCanceled)
-                                {
-                                    <span class="px-4 py-2 bg-red-500/90 text-white text-sm font-bold rounded-full shadow-lg backdrop-blur-sm">
-                                        <i class="bi bi-x-circle mr-1"></i>
-                                        Cancelada
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="px-4 py-2 bg-green-500/90 text-white text-sm font-bold rounded-full shadow-lg backdrop-blur-sm">
-                                        <i class="bi bi-check-circle mr-1"></i>
-                                        Finalizada
-                                    </span>
-                                }
+                                <span class="px-4 py-2 bg-yellow-500/90 text-white text-sm font-bold rounded-full shadow-lg backdrop-blur-sm">
+                                    <i class="bi bi-pencil-square mr-1"></i>
+                                    Draft
+                                </span>
                             </div>
 
-                            <!-- Número de pujas -->
+                            <!-- Bids badge -->
                             <div class="absolute top-3 left-3">
-                                <span class="px-3 py-1.5 bg-black/60 text-white text-sm font-semibold rounded-full backdrop-blur-sm">
+                                <span class="px-3 py-1.5 bg-primary/90 text-primary-foreground text-xs font-bold rounded-full shadow-lg backdrop-blur-sm">
                                     <i class="bi bi-people-fill mr-1"></i>
-                                    @bidCount puja@(bidCount != 1 ? "s" : "")
+                                    @bidCount bid@(bidCount != 1 ? "s" : "")
                                 </span>
+                            </div>
+
+                            <!-- Overlay button -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                                <a asp-controller="Subasta" asp-action="Details" asp-route-id="@auction.Id"
+                                   class="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                    <i class="bi bi-eye mr-2"></i>
+                                    View Details
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Contenido -->
-                        <div class="p-6">
-                            <!-- Nombre -->
-                            <h3 class="font-bold text-foreground text-xl mb-3 line-clamp-2">
+                        <!-- Content -->
+                        <div class="p-5">
+                            @if (obj.Categories.Any())
+                            {
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @foreach (var cat in obj.Categories.Take(2))
+                                    {
+                                        <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-md border border-accent/20">
+                                            @cat.Description
+                                        </span>
+                                    }
+                                </div>
+                            }
+
+                            <h3 class="font-bold text-foreground text-lg mb-2 line-clamp-2 min-h-[3.5rem]">
                                 @obj.Name
                             </h3>
 
                             <!-- Info Grid -->
                             <div class="grid grid-cols-2 gap-4 mb-4">
-                                <!-- Fecha de cierre -->
                                 <div class="bg-muted/30 rounded-lg p-3">
                                     <p class="text-xs text-muted-foreground mb-1 flex items-center">
-                                        <i class="bi bi-calendar-check mr-1"></i>
-                                        Finalizada
+                                        <i class="bi bi-calendar-event mr-1"></i>
+                                        Start
                                     </p>
                                     <p class="text-sm font-semibold text-foreground">
-                                        @auction.EndDate.ToString("dd/MM/yyyy")
+                                        @auction.StartDate.ToString("dd/MM/yyyy")
                                     </p>
                                 </div>
 
-                                <!-- Precio final -->
                                 <div class="bg-muted/30 rounded-lg p-3">
                                     <p class="text-xs text-muted-foreground mb-1 flex items-center">
                                         <i class="bi bi-currency-dollar mr-1"></i>
-                                        Precio Final
+                                        Base Price
                                     </p>
                                     <p class="text-sm font-bold text-primary">
-                                        $@finalPrice.ToString("N0")
+                                        $@auction.BasePrice.ToString("N0")
                                     </p>
                                 </div>
                             </div>
 
-                            <!-- Ganador (si hay) -->
-                            @if (!isCanceled && auction.Winner != null)
-                            {
-                                <div class="bg-primary/10 border border-primary/30 rounded-lg p-3 mb-4">
-                                    <p class="text-xs text-primary font-semibold mb-1 flex items-center">
-                                        <i class="bi bi-trophy-fill mr-2"></i>
-                                        Ganador
-                                    </p>
-                                    <p class="text-sm font-bold text-foreground">
-                                        @auction.Winner.Username
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-border">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-1">Current Bid</p>
+                                    <p class="text-2xl font-bold text-primary">
+                                        $@currentPrice.ToString("N0")
                                     </p>
                                 </div>
-                            }
+                            </div>
 
-                            <!-- Botones de acción -->
                             <div class="flex gap-2">
-                                <a asp-controller="Subasta" asp-action="Details" asp-route-id="@auction.Id"
-                                   class="flex-1 inline-flex items-center justify-center px-4 py-2.5 bg-accent text-accent-foreground rounded-lg hover:opacity-90 transition-all font-semibold">
-                                    <i class="bi bi-eye mr-2"></i>
-                                    Ver Detalle
+                                <a asp-controller="Subasta" asp-action="Edit" asp-route-id="@auction.Id"
+                                   class="flex-1 inline-flex items-center justify-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                                    <i class="bi bi-pencil-square mr-2"></i>
+                                    Edit Draft
                                 </a>
-                            </div>
-                            @if(auction.StartDate > DateTime.Now)
-                            {
-                                <form asp-controller="Subasta" asp-action="Delete" asp-route-id="@auction.Id" method="post" class="flex-1 mt-2">
+                                <form asp-controller="Subasta" asp-action="Publish" asp-route-id="@auction.Id" method="post" class="flex-1">
                                     @Html.AntiForgeryToken()
                                     <button type="submit"
-                                            class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-red-500/40 text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-all font-semibold">
-                                        <i class="bi bi-trash mr-2"></i>
-                                        Delete Auction
+                                            class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all font-semibold shadow-lg">
+                                        <i class="bi bi-rocket-takeoff mr-2"></i>
+                                        Publish Auction
                                     </button>
                                 </form>
-                            }
+                            </div>
                         </div>
                     </div>
                 }
@@ -200,16 +197,16 @@
             <div class="bg-card rounded-xl shadow-2xl border border-border p-16 text-center">
                 <div class="max-w-md mx-auto">
                     <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="bi bi-clock-history text-6xl text-muted-foreground"></i>
+                        <i class="bi bi-file-earmark-text text-6xl text-muted-foreground"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-foreground mb-3">No hay subastas finalizadas</h3>
+                    <h3 class="text-2xl font-bold text-foreground mb-3">No draft auctions yet</h3>
                     <p class="text-muted-foreground mb-6">
-                        Todavía no se han completado subastas en el sistema.
+                        Draft auctions you save will appear here.
                     </p>
-                    <a asp-action="Finalizadas"
+                    <a asp-action="Index"
                        class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
                         <i class="bi bi-hammer mr-2"></i>
-                        View Finished Auctions
+                        View Active Auctions
                     </a>
                 </div>
             </div>
@@ -217,10 +214,10 @@
 
         @if (Model.PageCount > 1)
         {
-            <!-- Paginación -->
+            <!-- Pagination -->
             <div class="flex justify-center mt-8">
                 <div class="bg-card rounded-xl shadow-lg border border-border p-4">
-                    @Html.PagedListPager(Model, page => Url.Action("Finalizadas", new { page }),
+                    @Html.PagedListPager(Model, page => Url.Action("Borrador", new { page }),
                     new PagedListRenderOptions
                     {
                         LiElementClasses = new string[] { "inline-block" },
@@ -228,9 +225,9 @@
                         ActiveLiElementClass = "active",
                         UlElementClasses = new string[] { "flex items-center gap-2" }
                     })
+                </div>
             </div>
-        </div>
-                }
+        }
     </div>
 </div>
 

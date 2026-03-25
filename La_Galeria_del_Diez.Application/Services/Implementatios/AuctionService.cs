@@ -35,10 +35,44 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             return _mapper.Map<ICollection<AuctionDTO>>(list);
         }
 
+        public async Task<ICollection<AuctionDTO>> ListActiveAsync(DateTime now)
+        {
+            var list = await _repository.ListActiveAsync(now);
+            return _mapper.Map<ICollection<AuctionDTO>>(list);
+        }
+
+        public async Task<ICollection<AuctionDTO>> ListFinishedAsync(DateTime now)
+        {
+            var list = await _repository.ListFinishedAsync(now);
+            return _mapper.Map<ICollection<AuctionDTO>>(list);
+        }
+
+        public async Task<ICollection<AuctionDTO>> ListDraftAsync(DateTime now)
+        {
+            var list = await _repository.ListDraftAsync(now);
+            return _mapper.Map<ICollection<AuctionDTO>>(list);
+        }
+
         public async Task AddAsync(AuctionDTO dto)
         {
             var auction = _mapper.Map<Auction>(dto);
             await _repository.AddAsync(auction);
+        }
+
+        public async Task UpdateAsync(int id, AuctionDTO dto)
+        {
+            // Traer entity (idealmente trackeado) antes de mapear encima
+            var entity = await _repository.FindByIdAsync(id);
+
+            // Map "sobre" el entity existente (mantiene tracking)
+            _mapper.Map(dto, entity);
+
+            await _repository.UpdateAsync(entity);
+        }
+
+        public async Task UpdateStateAsync(int id, int stateId)
+        {
+            await _repository.UpdateStateAsync(id, stateId);
         }
     }
 }
