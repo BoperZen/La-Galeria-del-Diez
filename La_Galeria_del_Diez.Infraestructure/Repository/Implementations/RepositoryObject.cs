@@ -2,11 +2,6 @@
 using La_Galeria_del_Diez.Infraestructure.Models;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
 {
@@ -32,7 +27,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
 
             if (@object != null)
             {
-                // Cargar auctions separadamente
                 @object.Auction = await _context.Set<Auction>()
                     .Where(a => a.IdObject == id)
                     .Include(a => a.IdUserNavigation)
@@ -57,7 +51,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                         .AsNoTracking()
                                         .ToListAsync();
 
-            // Cargar auctions en una query separada para evitar cartesian product
             var objectIds = collection.Select(x => x.Id).ToList();
 
             if (objectIds.Any())
@@ -70,7 +63,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                     .AsNoTracking()
                     .ToListAsync();
 
-                // Asignar auctions manualmente
                 foreach (var obj in collection)
                 {
                     obj.Auction = auctions.Where(a => a.IdObject == obj.Id).ToList();
@@ -78,14 +70,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             }
 
             return collection;
-        }
-
-        public async Task<int> CountBidding(int id)
-        {
-            int count = await _context.Set<Bidding>()
-                              .Where(b => b.IdAuction == id)
-                              .CountAsync();
-            return count;
         }
 
         public async Task<ICollection<AuctionableObject>> ListAsyncNoAuction()
@@ -107,6 +91,144 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                         .AsNoTracking()
                                         .ToListAsync();
             return collection;
+        }
+
+        public async Task AddAsync(AuctionableObject auctionableObject)
+        {
+            var categoryIds = auctionableObject.IdCategory?.Select(c => c.Id).Distinct().ToList() ?? new List<int>();
+            var imagePayload = auctionableObject.Image?
+                .Where(i => i.Data != null && i.Data.Length > 0)
+                .Select(i => new Image
+                {
+                    Data = i.Data,
+                    RegistrationDate = i.RegistrationDate == default ? DateTime.Now : i.RegistrationDate
+                })
+                .ToList() ?? new List<Image>();
+
+            auctionableObject.IdCategory = new List<Category>();
+            auctionableObject.Image = new List<Image>();
+
+            _context.Set<AuctionableObject>().Add(auctionableObject);
+            await _context.SaveChangesAsync();
+
+            if (categoryIds.Any())
+            {
+                var categories = await _context.Set<Category>()
+                    .Where(c => categoryIds.Contains(c.Id))
+                    .ToListAsync();
+
+                foreach (var category in categories)
+                {
+                    auctionableObject.IdCategory.Add(category);
+                }
+            }
+
+            foreach (var image in imagePayload)
+            {
+                image.IdObject = auctionableObject.Id;
+                _context.Set<Image>().Add(image);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(AuctionableObject auctionableObject)
+        {
+            var existing = await _context.Set<AuctionableObject>()
+                .Include(o => o.IdCategory)
+                .Include(o => o.Image)
+                .FirstOrDefaultAsync(o => o.Id == auctionableObject.Id);
+
+            if (existing == null)
+            {
+                return;
+            }
+
+            existing.Name = auctionableObject.Name;
+            existing.Description = auctionableObject.Description;
+            existing.Condition = auctionableObject.Condition;
+            existing.IdState = auctionableObject.IdState;
+
+            var hasActiveAuction = await HasActiveAuctionAsync(existing.Id);
+            if (hasActiveAuction || existing.IdState != 6)
+            {
+                throw new InvalidOperationException("El objeto no puede editarse por su estado actual o por tener subasta activa.");
+            }
+
+            var categoryIds = auctionableObject.IdCategory?.Select(c => c.Id).Distinct().ToList() ?? new List<int>();
+            var categories = await _context.Set<Category>()
+                .Where(c => categoryIds.Contains(c.Id))
+                .ToListAsync();
+
+            existing.IdCategory.Clear();
+            foreach (var category in categories)
+            {
+                existing.IdCategory.Add(category);
+            }
+
+            var newImages = auctionableObject.Image?
+                .Where(i => i.Data != null && i.Data.Length > 0)
+                .Select(i => new Image
+                {
+                    Data = i.Data,
+                    RegistrationDate = i.RegistrationDate == default ? DateTime.Now : i.RegistrationDate,
+                    IdObject = existing.Id
+                })
+                .ToList() ?? new List<Image>();
+
+            if (newImages.Any())
+            {
+                _context.Set<Image>().AddRange(newImages);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var existing = await _context.Set<AuctionableObject>()
+                .Include(o => o.Image)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (existing == null)
+            {
+                return;
+            }
+
+            var hasActiveAuction = await HasActiveAuctionAsync(id);
+            if (hasActiveAuction)
+            {
+                throw new InvalidOperationException("No se puede eliminar un objeto con subasta activa.");
+            }
+
+            if (existing.Image.Any())
+            {
+                _context.Set<Image>().RemoveRange(existing.Image);
+            }
+
+            _context.Set<AuctionableObject>().Remove(existing);
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<bool> HasActiveAuctionAsync(int id)
+        {
+            return _context.Set<Auction>()
+                .AnyAsync(a => a.IdObject == id && a.EndDate > DateTime.Now);
+        }
+
+        public async Task<bool> CanEditAsync(int id)
+        {
+            var obj = await _context.Set<AuctionableObject>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            var hasActiveAuction = await HasActiveAuctionAsync(id);
+            return obj.IdState == 6 && !hasActiveAuction;
         }
     }
 }

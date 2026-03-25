@@ -12,5 +12,10 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
         Task<ICollection<Auctionable_ObjectDTO>> ListAsync();
         Task<ICollection<Auctionable_ObjectDTO>> ListAsyncNoAuction();
         Task<Auctionable_ObjectDTO?> FindByIdAsync(int id);
+        Task AddAsync(Auctionable_ObjectDTO dto);
+        Task UpdateAsync(Auctionable_ObjectDTO dto);
+        Task DeleteAsync(int id);
+        Task<bool> CanEditAsync(int id);
+        Task<bool> HasActiveAuctionAsync(int id);
     }
 }
