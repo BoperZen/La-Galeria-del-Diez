@@ -1,7 +1,9 @@
 ﻿@model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
 
 @{
-    ViewData["Title"] = "Create Auction";
+    ViewData["Title"] = "Edit Auction";
+    var selectedObject = ViewBag.Auctionable_ObjectDTO as La_Galeria_del_Diez.Application.DTOs.Auctionable_ObjectDTO;
+    var selectedUser = ViewBag.User as La_Galeria_del_Diez.Application.DTOs.UserDTO;
 }
 
 <div class="min-h-screen bg-background py-8">
@@ -15,120 +17,115 @@
             </a>
         </div>
 
-        <!-- Título -->
-        <h1 class="text-xl font-bold text-foreground mb-4">Create Auction</h1>
+        <!-- Title -->
+        <h1 class="text-xl font-bold text-foreground mb-4">Edit Auction</h1>
 
-        <form asp-action="Create" method="post" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <!-- IZQUIERDA: Objeto seleccionado (preview visual) -->
+        <form asp-action="Edit" method="post" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <input type="hidden" asp-for="Id" />
+            <!-- LEFT: Selected object (visual preview) -->
+            <input type="hidden" asp-for="IdObject" value="@selectedObject?.Id">
             <div class="lg:col-span-1">
                 <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
                     <div class="bg-muted w-full h-48 flex items-center justify-center flex-col gap-2 text-muted-foreground">
-                        <img id="imagePreview" class="hidden max-h-full max-w-full object-contain" alt="Vista previa" />
-                        <span id="imagePreviewPlaceholder" class="text-xs">Shirt preview</span>
+                        @if (selectedObject?.Images != null && selectedObject.Images.Any())
+                        {
+                            <img id="imagePreview" class="max-h-full max-w-full object-contain"
+                                 src="@Url.Action("GetImage", "Image", new { objectId = selectedObject.Id })"
+                                 alt="@selectedObject.Name" />
+                        }
+                        else
+                        {
+                            <img id="imagePreview" class="hidden max-h-full max-w-full object-contain" alt="Preview" />
+                            <span id="imagePreviewPlaceholder" class="text-xs">No image</span>
+                        }
                     </div>
                 </div>
 
                 <div class="bg-card rounded-lg border border-border p-3">
-                    <div class="text-xs text-muted-foreground mb-1">Selected shirt</div>
-                    <div id="selectedObjectName" class="font-semibold text-foreground text-sm">Shirt name (placeholder)</div>
+                    <div class="text-xs text-muted-foreground mb-1">Selected object</div>
+                    <div id="selectedObjectName" class="font-semibold text-foreground text-sm">@(selectedObject?.Name ?? "Unknown object")</div>
+                </div>
+
+                <div class="bg-card rounded-lg border border-border p-3 mt-3">
+                    <div class="text-xs text-muted-foreground mb-2">Object details</div>
+                    <div class="text-sm text-foreground flex flex-col gap-1">
+                        <div><span class="text-muted-foreground">Condition:</span> @(selectedObject?.Condition ?? "N/A")</div>
+                        <div><span class="text-muted-foreground">Status:</span> @(selectedObject?.State?.Description ?? "N/A")</div>
+                        <div><span class="text-muted-foreground">Registered:</span> @(selectedObject?.RegistrationDate.ToString("MM/dd/yyyy") ?? "N/A")</div>
+                        <div><span class="text-muted-foreground">Description:</span> @(selectedObject?.Description ?? "N/A")</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- DERECHA: Datos de la subasta -->
+            <!-- RIGHT: Auction details -->
             <div class="lg:col-span-2 flex flex-col gap-4">
                 <div class="bg-card rounded-lg border border-border p-4">
                     <div asp-validation-summary="ModelOnly" class="text-xs text-red-500 mb-3"></div>
                     <h2 class="text-sm font-bold text-foreground mb-3 flex items-center">
                         <i class="bi bi-gavel mr-2 text-primary text-xs"></i>
-                        Auction Details
+                        Auction details
                     </h2>
 
-                    <!-- Selector de objeto (desplegable con recuadros) -->
+                    <!-- Start date -->
                     <div class="py-2 border-b border-border">
-                        <label asp-for="IdObject" class="hidden text-xs text-muted-foreground mb-2 block"></label>
-                        <details class="group bg-muted/30 rounded border border-border">
-                            <summary class="list-none cursor-pointer px-3 py-2 flex items-center justify-between text-sm text-foreground">
-                                <span>Select shirt</span>
-                                <i class="bi bi-chevron-down text-xs transition-transform group-open:rotate-180"></i>
-                            </summary>
-                            <div class="p-3 border-t border-border">
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    @foreach (var item in (IEnumerable<dynamic>)ViewBag.ListObject){
-                                        <button type="button"
-                                                class="object-select p-2 rounded border border-border bg-card hover:border-primary text-left transition-colors"
-                                                data-id="@item.Id"
-                                                data-image="data:image/jpeg;base64,@Convert.ToBase64String(@item.Images[0].Data)"
-                                                data-name="@item.Name">
-                                            <div class="h-14 bg-muted/50 rounded mb-2 flex items-center justify-center overflow-hidden">
-                                                <img id="mainImageSrc"
-                                                     class="max-h-full max-w-full object-contain"
-                                                     src="data:image/jpeg;base64,@Convert.ToBase64String(@item.Images[0].Data)"
-                                                     alt="Shirt @item.Name"
-                                                     loading="lazy" />
-                                            </div>
-                                            <div class="text-xs text-foreground font-medium truncate">@item.Name</div>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </details>
-                        <select asp-for="IdObject" class="hidden">
-                            <option value="">Select shirt</option>
-                            @foreach (var item in (IEnumerable<dynamic>)ViewBag.ListObject)
-                            {
-                                <option value="@item.Id">@item.Name</option>
-                            }
-                        </select>
-                        <span asp-validation-for="IdObject" class="text-xs text-red-500"></span>
-                    </div>
-
-                    <!-- Fecha Inicio -->
-                    <div class="py-2 border-b border-border">
-                        <label asp-for="StartDate" class="text-xs text-muted-foreground mb-1 block">Start date</label>
+                        <label asp-for="StartDate" class="text-xs text-muted-foreground mb-1 block"></label>
                         <input asp-for="StartDate" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local"
                                class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
                         <span asp-validation-for="StartDate" class="text-xs text-red-500"></span>
                     </div>
 
-                    <!-- Fecha Cierre -->
+                    <!-- End date -->
                     <div class="py-2 border-b border-border">
-                        <label asp-for="EndDate" class="text-xs text-muted-foreground mb-1 block">End date</label>
+                        <label asp-for="EndDate" class="text-xs text-muted-foreground mb-1 block"></label>
                         <input asp-for="EndDate" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local"
                                class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
                         <span asp-validation-for="EndDate" class="text-xs text-red-500"></span>
                     </div>
 
-                    <!-- Precio Base -->
+                    <!-- Base price -->
                     <div class="py-2 border-b border-border">
-                        <label asp-for="BasePrice" class="text-xs text-muted-foreground mb-1 block">Base price</label>
+                        <label asp-for="BasePrice" class="text-xs text-muted-foreground mb-1 block"></label>
                         <input asp-for="BasePrice" type="number" placeholder="0"
                                class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
                         <span asp-validation-for="BasePrice" class="text-xs text-red-500"></span>
                     </div>
 
-                    <!-- Incremento Mínimo -->
+                    <!-- Minimum increment -->
                     <div class="py-2 border-b border-border">
-                        <label asp-for="MinIncrement" class="text-xs text-muted-foreground mb-1 block">Minimum increment</label>
+                        <label asp-for="MinIncrement" class="text-xs text-muted-foreground mb-1 block"></label>
                         <input asp-for="MinIncrement" type="number" placeholder="0"
                                class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
                         <span asp-validation-for="MinIncrement" class="text-xs text-red-500"></span>
                     </div>
 
-                    <!-- Usuario visual -->
+                    <!-- Initial status -->
+                    <div class="flex items-center gap-3 py-2 border-b border-border">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-check-circle-fill text-foreground text-xs"></i>
+                        </div>
+                        <!-- Always active status -->
+                        <input type="hidden" asp-for="IdState" value="1">
+                        <div class="flex-1">
+                            <div class="text-xs text-muted-foreground">Initial status</div>
+                            <div class="font-semibold text-foreground text-sm">Active (not editable)</div>
+                        </div>
+                    </div>
+
+                    <!-- User display -->
                     <div class="flex items-center gap-3 py-2">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-person-fill text-foreground text-xs"></i>
                         </div>
                         <!-- User input -->
-                        <input type="hidden" asp-for="IdUser" value="@ViewBag.User.Id">
+                        <input type="hidden" asp-for="IdUser" value="@selectedUser?.Id">
                         <div class="flex-1">
                             <div class="text-xs text-muted-foreground">User</div>
-                            <div class="font-semibold text-foreground text-sm">@ViewBag.User.Username</div>
+                            <div class="font-semibold text-foreground text-sm">@(selectedUser?.Username ?? "Unknown")</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Botones visuales -->
+                <!-- Action buttons -->
                 <div class="flex justify-end gap-3">
                     <a asp-action="Index"
                        class="inline-flex items-center px-5 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
@@ -138,12 +135,7 @@
                     <button type="submit"
                             class="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
                         <i class="bi bi-check2-circle mr-2"></i>
-                        Publish Auction
-                    </button>
-                    <button type="submit" formaction="@Url.Action("CreateBorrador", "Subasta")"
-                            class="inline-flex items-center px-5 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
-                        <i class="bi bi-save mr-2"></i>
-                        Save Draft
+                        Update Auction
                     </button>
                 </div>
             </div>
@@ -188,14 +180,14 @@
                 }
 
                 preview.src = image;
-                preview.alt = name || 'Vista previa';
+                preview.alt = name || 'Preview';
                 preview.classList.remove('hidden');
                 placeholder?.classList.add('hidden');
                 if (objectSelect && id) {
                     objectSelect.value = id;
                 }
                 if (selectedObjectName) {
-                    selectedObjectName.textContent = name || 'Nombre del objeto (placeholder)';
+                    selectedObjectName.textContent = name || 'Object name (placeholder)';
                 }
             });
         });

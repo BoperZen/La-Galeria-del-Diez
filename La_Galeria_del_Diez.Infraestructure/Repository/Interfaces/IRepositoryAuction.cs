@@ -10,7 +10,13 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
     public interface IRepositoryAuction
     {
         Task<ICollection<Auction>> ListAsync();
+        Task<ICollection<Auction>> ListActiveAsync(DateTime now);
+        Task<ICollection<Auction>> ListFinishedAsync(DateTime now);
+        Task<ICollection<Auction>> ListDraftAsync(DateTime now);
         Task<Auction> FindByIdAsync(int id);
         Task AddAsync(Auction auction);
+        Task UpdateAsync(Auction auction);
+        Task DeleteAsync(Auction auction);
+        Task UpdateStateAsync(int id, int stateId);
     }
 }
