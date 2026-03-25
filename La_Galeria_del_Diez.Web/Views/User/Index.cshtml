@@ -5,6 +5,21 @@
     var editedUserId = TempData["EditedUserId"]?.ToString();
 }
 
+<style>
+    @@keyframes userRowSlowPulse {
+        0%, 100% {
+            background-color: rgba(59, 130, 246, 0.03);
+        }
+        50% {
+            background-color: rgba(59, 130, 246, 0.12);
+        }
+    }
+
+    .user-row-pulse td {
+        animation: userRowSlowPulse 2.4s ease-in-out infinite;
+    }
+</style>
+
 <div class="min-h-screen bg-background py-8">
     <div class="container mx-auto px-4">
         <!-- Header -->
@@ -165,15 +180,11 @@
         const row = document.querySelector(`tr[data-user-id="${editedUserId}"]`);
         if (!row) return;
 
-        row.classList.add('ring-2', 'ring-primary/50', 'bg-primary/5', 'animate-pulse');
+        row.classList.add('user-row-pulse');
         row.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         setTimeout(() => {
-            row.classList.remove('animate-pulse');
-        }, 3500);
-
-        setTimeout(() => {
-            row.classList.remove('ring-2', 'ring-primary/50', 'bg-primary/5');
-        }, 7000);
+            row.classList.remove('user-row-pulse');
+        }, 8000);
     })();
 </script>
