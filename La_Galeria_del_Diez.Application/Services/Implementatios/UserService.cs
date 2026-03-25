@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
+using La_Galeria_del_Diez.Infraestructure.Models;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,12 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
         {
             var list = await _repository.ListAsync();
             return _mapper.Map<ICollection<UserDTO>>(list);
+        }
+
+        public async Task AddAsync(UserDTO dto)
+        {
+            var user = _mapper.Map<User>(dto);
+            await _repository.AddAsync(user);
         }
 
         private async Task<int> Tally(int id)

@@ -15,7 +15,11 @@ namespace La_Galeria_del_Diez.Application.Profiles
         {
             CreateMap<User, UserDTO>()
                 .ForMember(dest => dest.IdRolNavigation, opt => opt.MapFrom(src => src.IdRolNavigation))
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.IdRolNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.Auction, opt => opt.Ignore())
+                .ForMember(dest => dest.AuctionableObject, opt => opt.Ignore())
+                .ForMember(dest => dest.Bidding, opt => opt.Ignore());
         }
     }
 }
