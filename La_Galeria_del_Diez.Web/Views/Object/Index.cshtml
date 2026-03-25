@@ -144,11 +144,24 @@
                                    title="Ver">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a asp-action="Edit" asp-route-id="@obj.Id"
-                                   class="inline-flex items-center justify-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold text-sm"
-                                   title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
+
+                                @if (hasAuction)
+                                {
+                                    <button type="button"
+                                            disabled
+                                            class="inline-flex items-center justify-center px-4 py-2.5 bg-primary/5 text-primary/40 border border-primary/10 rounded-lg cursor-not-allowed font-semibold text-sm"
+                                            title="No se puede editar: objeto con subasta activa">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a asp-action="Edit" asp-route-id="@obj.Id"
+                                       class="inline-flex items-center justify-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold text-sm"
+                                       title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                }
 
                                 @if (hasAuction)
                                 {

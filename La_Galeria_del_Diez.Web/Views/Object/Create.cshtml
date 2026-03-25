@@ -28,8 +28,9 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 <div class="lg:col-span-1">
-                    <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
-                        <div class="bg-muted w-full h-48 flex items-center justify-center flex-col gap-2 text-muted-foreground">
+                    <div class="bg-card rounded-lg border border-border overflow-hidden mb-2 h-48">
+                        <img id="objectMainPreview" src="" alt="Vista previa" class="hidden w-full h-full object-contain" />
+                        <div id="objectPreviewPlaceholder" class="bg-muted w-full h-full flex items-center justify-center flex-col gap-2 text-muted-foreground">
                             <i class="bi bi-image text-3xl"></i>
                             <span class="text-xs">Vista previa de imagen principal</span>
                         </div>
@@ -37,7 +38,7 @@
 
                     <div class="bg-card rounded-lg border border-border p-3">
                         <label class="text-xs text-muted-foreground mb-2 block">Imágenes <span class="text-red-400">*</span></label>
-                        <input type="file" name="imageFiles" multiple accept="image/*" required
+                        <input id="imageFilesInput" type="file" name="imageFiles" multiple accept="image/*" required
                                class="w-full text-sm text-foreground bg-muted/30 border border-border rounded px-3 py-2 file:mr-3 file:px-3 file:py-1 file:rounded file:border-0 file:bg-primary file:text-primary-foreground" />
                         <p class="text-xs text-muted-foreground mt-2">Debe agregar al menos una imagen.</p>
                     </div>
@@ -47,14 +48,14 @@
                     <div class="bg-card rounded-lg border border-border p-4">
                         <div class="py-2 border-b border-border">
                             <label asp-for="Name" class="text-xs text-muted-foreground mb-1 block">Nombre <span class="text-red-400">*</span></label>
-                            <input asp-for="Name" placeholder="Nombre del objeto"
+                            <input asp-for="Name" placeholder="Nombre del objeto" required
                                    class="w-full text-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
                             <span asp-validation-for="Name" class="text-red-400 text-xs"></span>
                         </div>
 
                         <div class="py-2 border-b border-border">
                             <label asp-for="Description" class="text-xs text-muted-foreground mb-1 block">Descripción <span class="text-red-400">*</span></label>
-                            <textarea asp-for="Description" rows="4" placeholder="Descripción del objeto (mínimo 20 caracteres)"
+                            <textarea asp-for="Description" rows="4" minlength="20" required placeholder="Descripción del objeto (mínimo 20 caracteres)"
                                       class="w-full text-sm text-foreground bg-muted/30 px-3 py-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-ring"></textarea>
                             <span asp-validation-for="Description" class="text-red-400 text-xs"></span>
                         </div>
@@ -62,7 +63,7 @@
                         <div class="py-2 border-b border-border">
                             <label class="text-xs text-muted-foreground mb-1 block">Categorías <span class="text-red-400">*</span></label>
 
-                            <details class="group bg-muted/30 rounded-lg border border-border">
+                            <details id="categoriesAccordion" class="group bg-muted/30 rounded-lg border border-border">
                                 <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between text-foreground font-semibold text-sm">
                                     <span>Seleccionar una o más categorías</span>
                                     <i class="bi bi-chevron-down text-xs transition-transform group-open:rotate-180"></i>
@@ -79,6 +80,7 @@
                                     }
                                 </div>
                             </details>
+                            <p id="categoryClientError" class="text-red-400 text-xs mt-2 hidden">Debe seleccionar al menos una categoría.</p>
                         </div>
 
                         <div class="py-2 border-b border-border">
@@ -164,15 +166,55 @@
             const modal = document.getElementById('confirmSaveObjectCreateModal');
             const cancelBtn = document.getElementById('cancelSaveObjectCreateBtn');
             const confirmBtn = document.getElementById('confirmSaveObjectCreateBtn');
+            const categoriesAccordion = document.getElementById('categoriesAccordion');
+            const categoryError = document.getElementById('categoryClientError');
+            const imageInput = document.getElementById('imageFilesInput');
+            const previewImg = document.getElementById('objectMainPreview');
+            const placeholder = document.getElementById('objectPreviewPlaceholder');
             let confirmed = false;
 
             if (!form || !modal || !cancelBtn || !confirmBtn) return;
 
+            function hasCategoriesSelected() {
+                return document.querySelectorAll('input[name="selectedCategoryIds"]:checked').length > 0;
+            }
+
+            function validateBeforeConfirm() {
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const categoriesOk = hasCategoriesSelected();
+                if (!categoriesOk) {
+                    categoryError?.classList.remove('hidden');
+                    categoriesAccordion?.setAttribute('open', 'open');
+                    categoriesAccordion?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return false;
+                }
+
+                categoryError?.classList.add('hidden');
+                return true;
+            }
+
             form.addEventListener('submit', function (e) {
                 if (confirmed) return;
                 e.preventDefault();
+
+                if (!validateBeforeConfirm()) {
+                    return;
+                }
+
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+            });
+
+            document.querySelectorAll('input[name="selectedCategoryIds"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (hasCategoriesSelected()) {
+                        categoryError?.classList.add('hidden');
+                    }
+                });
             });
 
             cancelBtn.addEventListener('click', function () {
@@ -192,6 +234,23 @@
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 }
+            });
+
+            imageInput?.addEventListener('change', function () {
+                const file = this.files && this.files.length > 0 ? this.files[0] : null;
+                if (!file || !previewImg || !placeholder) {
+                    if (previewImg) {
+                        previewImg.src = '';
+                        previewImg.classList.add('hidden');
+                    }
+                    placeholder?.classList.remove('hidden');
+                    return;
+                }
+
+                const objectUrl = URL.createObjectURL(file);
+                previewImg.src = objectUrl;
+                previewImg.classList.remove('hidden');
+                placeholder.classList.add('hidden');
             });
         })();
     </script>
