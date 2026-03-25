@@ -1,9 +1,4 @@
-﻿using La_Galeria_del_Diez.Infraestructure.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using La_Galeria_del_Diez.Infraestructure.Models;
 
 namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
 {
@@ -12,6 +7,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
         Task<ICollection<User>> ListAsync();
         Task<User> FindByIdAsync(int id);
         Task<int> Tally(int id);
-        Task AddAsync(User user);
+        Task UpdateAsync(User user);
     }
 }

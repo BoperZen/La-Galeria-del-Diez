@@ -43,15 +43,31 @@ namespace La_Galeria_del_Diez.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View(new UserDTO());
+            if (id == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var user = await _serviceUser.FindByIdAsync(id.Value);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(user);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserDTO dto)
+        public async Task<IActionResult> Edit(int id, UserDTO dto)
         {
+            if (id != dto.Id)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Username))
             {
                 ModelState.AddModelError(nameof(dto.Username), "Debe ingresar el nombre de usuario.");
@@ -62,24 +78,9 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 ModelState.AddModelError(nameof(dto.Email), "Debe ingresar el correo electrónico.");
             }
 
-            if (string.IsNullOrWhiteSpace(dto.Password))
-            {
-                ModelState.AddModelError(nameof(dto.Password), "Debe ingresar la contraseña.");
-            }
-
-            if (dto.IdRol <= 0)
-            {
-                ModelState.AddModelError(nameof(dto.IdRol), "Debe seleccionar un rol.");
-            }
-
-            if (dto.RegistrationDate == default)
-            {
-                dto.RegistrationDate = DateTime.Now;
-            }
-
             if (dto.UserState is null)
             {
-                dto.UserState = true;
+                ModelState.AddModelError(nameof(dto.UserState), "Debe seleccionar el estado del usuario.");
             }
 
             if (!ModelState.IsValid)
@@ -99,12 +100,13 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return View(dto);
             }
 
-            await _serviceUser.AddAsync(dto);
+            await _serviceUser.UpdateAsync(dto);
 
+            TempData["EditedUserId"] = dto.Id;
             TempData["SwalSuccess"] = JsonSerializer.Serialize(new
             {
-                title = "Usuario creado correctamente",
-                text = "El usuario fue registrado exitosamente.",
+                title = "Usuario actualizado correctamente",
+                text = "Los datos del usuario fueron actualizados.",
                 icon = "success"
             });
 

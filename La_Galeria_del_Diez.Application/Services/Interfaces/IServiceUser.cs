@@ -1,9 +1,4 @@
-﻿using La_Galeria_del_Diez.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using La_Galeria_del_Diez.Application.DTOs;
 
 namespace La_Galeria_del_Diez.Application.Services.Interfaces
 {
@@ -11,6 +6,6 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
     {
         Task<ICollection<UserDTO>> ListAsync();
         Task<UserDTO?> FindByIdAsync(int id);
-        Task AddAsync(UserDTO dto);
+        Task UpdateAsync(UserDTO dto);
     }
 }

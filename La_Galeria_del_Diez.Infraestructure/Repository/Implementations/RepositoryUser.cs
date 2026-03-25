@@ -59,5 +59,20 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             _context.Set<User>().Add(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateAsync(User user)
+        {
+            var existing = await _context.Set<User>().FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (existing == null)
+            {
+                return;
+            }
+
+            existing.Username = user.Username;
+            existing.Email = user.Email;
+            existing.UserState = user.UserState;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

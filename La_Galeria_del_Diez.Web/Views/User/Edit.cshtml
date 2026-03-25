@@ -1,0 +1,299 @@
+@model La_Galeria_del_Diez.Application.DTOs.UserDTO
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" id="editUserForm">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IdRol" type="hidden" />
+            <input asp-for="RegistrationDate" type="hidden" />
+
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-4">
+                    <a asp-action="Index" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
+                        <i class="bi bi-arrow-left text-xl"></i>
+                    </a>
+                    <div>
+                        <h1 class="text-4xl font-bold text-foreground">Editar Usuario</h1>
+                        <p class="text-muted-foreground">Actualiza nombre, correo y estado</p>
+                    </div>
+                </div>
+                <button type="submit"
+                        class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                    <i class="bi bi-check2-circle mr-2"></i>
+                    Guardar cambios
+                </button>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-red-400 mb-4"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1">
+                    <div class="bg-card rounded-xl shadow-2xl border border-border overflow-hidden sticky top-24">
+                        <div class="bg-gradient-to-br from-primary/20 to-accent/20 p-8 text-center border-b border-border">
+                            <div class="w-32 h-32 bg-primary/30 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-primary">
+                                <span class="text-6xl font-bold text-primary">
+                                    @(string.IsNullOrEmpty(Model.Username) ? "U" : Model.Username.Substring(0, 1).ToUpper())
+                                </span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-foreground mb-2">@Model.Username</h2>
+                            <p class="text-muted-foreground text-sm mb-4">@Model.Email</p>
+
+                            @if (Model.UserState == true)
+                            {
+                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                    Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                                    <span class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                                    Inactivo
+                                </span>
+                            }
+                        </div>
+
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <i class="bi bi-shield-check text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-muted-foreground">Rol</p>
+                                        <p class="font-semibold text-foreground">@(Model.IdRolNavigation?.Description ?? "Sin Rol")</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
+                                        <i class="bi bi-calendar text-accent"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-muted-foreground">Fecha de registro</p>
+                                        <p class="font-semibold text-foreground">@Model.RegistrationDate.ToString("dd MMM yyyy")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-card rounded-xl shadow-2xl border border-border overflow-hidden">
+                        <div class="bg-muted px-6 py-4 border-b border-border">
+                            <h3 class="text-lg font-bold text-foreground flex items-center">
+                                <i class="bi bi-info-circle mr-2"></i>
+                                Información editable
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label asp-for="Username" class="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                                        <i class="bi bi-person mr-2"></i>Nombre de Usuario
+                                    </label>
+                                    <input asp-for="Username" class="w-full text-base font-semibold text-foreground bg-muted/30 px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                                    <span asp-validation-for="Username" class="text-red-400 text-xs"></span>
+                                </div>
+
+                                <div>
+                                    <label asp-for="Email" class="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                                        <i class="bi bi-envelope mr-2"></i>Email
+                                    </label>
+                                    <input asp-for="Email" type="email" class="w-full text-base font-semibold text-foreground bg-muted/30 px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-ring" />
+                                    <span asp-validation-for="Email" class="text-red-400 text-xs"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card rounded-xl shadow-2xl border border-border overflow-hidden">
+                        <div class="bg-muted px-6 py-4 border-b border-border">
+                            <h3 class="text-lg font-bold text-foreground flex items-center">
+                                <i class="bi bi-gear mr-2"></i>
+                                Restricciones y estado
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                                        <i class="bi bi-shield-check mr-2"></i>Rol Asignado (no editable)
+                                    </label>
+                                    <input type="text" disabled value="@(Model.IdRolNavigation?.Description ?? "Sin Rol")"
+                                           class="w-full text-base font-semibold text-muted-foreground bg-muted/20 px-4 py-3 rounded-lg border border-border cursor-not-allowed" />
+                                </div>
+
+                                <div>
+                                    <label class="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                                        <i class="bi bi-calendar-event mr-2"></i>Fecha de Registro (no editable)
+                                    </label>
+                                    <input type="text" disabled value="@Model.RegistrationDate.ToString("dd/MM/yyyy HH:mm")"
+                                           class="w-full text-base font-semibold text-muted-foreground bg-muted/20 px-4 py-3 rounded-lg border border-border cursor-not-allowed" />
+                                </div>
+
+                                <div>
+                                    <label asp-for="UserState" class="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                                        <i class="bi bi-toggle-on mr-2"></i>Estado (bloquear / activar)
+                                    </label>
+
+                                    <input asp-for="UserState" type="hidden" id="stateValueInput" />
+
+                                    <details id="statePickerDetails" class="group bg-muted/30 rounded-lg border border-border">
+                                        <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between text-foreground font-semibold">
+                                            <span id="statePickerSummaryText">Seleccionar estado</span>
+                                            <i class="bi bi-chevron-down text-xs transition-transform group-open:rotate-180"></i>
+                                        </summary>
+
+                                        <div class="px-3 pb-3 pt-1 border-t border-border space-y-2">
+                                            <button type="button" id="stateOptionActive" data-value="true"
+                                                    class="w-full text-left px-3 py-2 rounded-md border border-border bg-card hover:border-green-500/50 hover:bg-green-500/5 transition-colors">
+                                                <span class="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+                                                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                                                    Activo
+                                                </span>
+                                            </button>
+
+                                            <button type="button" id="stateOptionInactive" data-value="false"
+                                                    class="w-full text-left px-3 py-2 rounded-md border border-border bg-card hover:border-red-500/50 hover:bg-red-500/5 transition-colors">
+                                                <span class="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+                                                    <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                                                    Inactivo
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    <span asp-validation-for="UserState" class="text-red-400 text-xs"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-between items-center">
+                <a asp-action="Index" class="inline-flex items-center px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                    <i class="bi bi-arrow-left mr-2"></i>
+                    Volver a la Lista
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                    <i class="bi bi-check2-circle mr-2"></i>
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="confirmSaveModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
+    <div class="w-full max-w-md rounded-xl border border-border bg-card shadow-2xl">
+        <div class="px-6 py-4 border-b border-border">
+            <h3 class="text-lg font-bold text-foreground flex items-center">
+                <i class="bi bi-patch-question mr-2 text-primary"></i>
+                Confirmar cambios
+            </h3>
+        </div>
+        <div class="px-6 py-5 text-sm text-muted-foreground">
+            ¿Desea guardar los cambios de este usuario?
+        </div>
+        <div class="px-6 py-4 border-t border-border flex justify-end gap-3">
+            <button type="button" id="cancelSaveBtn"
+                    class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold">
+                Cancelar
+            </button>
+            <button type="button" id="confirmSaveBtn"
+                    class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-colors font-semibold">
+                Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const form = document.getElementById('editUserForm');
+            const modal = document.getElementById('confirmSaveModal');
+            const cancelBtn = document.getElementById('cancelSaveBtn');
+            const confirmBtn = document.getElementById('confirmSaveBtn');
+            let confirmed = false;
+
+            if (!form || !modal || !cancelBtn || !confirmBtn) return;
+
+            form.addEventListener('submit', function (e) {
+                if (confirmed) return;
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+
+            cancelBtn.addEventListener('click', function () {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+
+            confirmBtn.addEventListener('click', function () {
+                confirmed = true;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                form.submit();
+            });
+
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+
+            const stateInput = document.getElementById('stateValueInput');
+            const stateDetails = document.getElementById('statePickerDetails');
+            const stateSummary = document.getElementById('statePickerSummaryText');
+            const optionActive = document.getElementById('stateOptionActive');
+            const optionInactive = document.getElementById('stateOptionInactive');
+
+            if (!stateInput || !stateDetails || !stateSummary || !optionActive || !optionInactive) return;
+
+            function normalizeValue(v) {
+                return String(v).toLowerCase() === 'true' ? 'true' : 'false';
+            }
+
+            function renderStateUI(value) {
+                const normalized = normalizeValue(value);
+                stateInput.value = normalized;
+
+                const isActive = normalized === 'true';
+                stateSummary.textContent = isActive ? 'Activo' : 'Inactivo';
+
+                optionActive.classList.toggle('border-green-500/60', isActive);
+                optionActive.classList.toggle('bg-green-500/10', isActive);
+                optionInactive.classList.toggle('border-red-500/60', !isActive);
+                optionInactive.classList.toggle('bg-red-500/10', !isActive);
+            }
+
+            optionActive.addEventListener('click', function () {
+                renderStateUI('true');
+                stateDetails.removeAttribute('open');
+            });
+
+            optionInactive.addEventListener('click', function () {
+                renderStateUI('false');
+                stateDetails.removeAttribute('open');
+            });
+
+            renderStateUI(stateInput.value || '@(Model.UserState == true ? "true" : "false")');
+        })();
+    </script>
+}

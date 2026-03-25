@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Usuarios";
+    var editedUserId = TempData["EditedUserId"]?.ToString();
 }
 
 <div class="min-h-screen bg-background py-8">
@@ -12,11 +13,10 @@
                 <h1 class="text-4xl font-bold text-foreground mb-2">Gestión de Usuarios</h1>
                 <p class="text-muted-foreground">Administra los usuarios de la plataforma</p>
             </div>
-            <a asp-action="Create" 
-               class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all duration-200 font-semibold shadow-lg hover:shadow-xl">
-                <i class="bi bi-person-plus mr-2"></i>
-                Nuevo Usuario
-            </a>
+            <span class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg font-semibold border border-border">
+                <i class="bi bi-pencil-square mr-2"></i>
+                Solo edición habilitada
+            </span>
         </div>
 
         <!-- Search and Filters -->
@@ -74,7 +74,8 @@
                     <tbody class="divide-y divide-border">
                         @foreach (var item in Model)
                         {
-                            <tr class="hover:bg-muted/50 transition-colors duration-150">
+                            <tr class="hover:bg-muted/50 transition-colors duration-150"
+                                data-user-id="@item.Id">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
                                         <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center mr-3">
@@ -120,11 +121,6 @@
                                            title="Editar">
                                             <i class="bi bi-pencil text-lg"></i>
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" 
-                                           class="inline-flex items-center justify-center p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors border border-red-500/20"
-                                           title="Eliminar">
-                                            <i class="bi bi-trash text-lg"></i>
-                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -142,12 +138,7 @@
                         <i class="bi bi-people text-4xl text-primary"></i>
                     </div>
                     <h3 class="text-xl font-bold text-foreground mb-2">No hay usuarios registrados</h3>
-                    <p class="text-muted-foreground mb-6">Comienza agregando el primer usuario al sistema</p>
-                    <a asp-action="Create" 
-                       class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all duration-200 font-semibold shadow-lg">
-                        <i class="bi bi-person-plus mr-2"></i>
-                        Crear Primer Usuario
-                    </a>
+                    <p class="text-muted-foreground">No hay datos para editar por el momento.</p>
                 </div>
             </div>
         }
@@ -165,4 +156,24 @@
             row.style.display = text.includes(searchTerm) ? '' : 'none';
         });
     });
+
+    // Resaltado suave del usuario recién editado
+    (function () {
+        const editedUserId = '@(editedUserId ?? string.Empty)';
+        if (!editedUserId) return;
+
+        const row = document.querySelector(`tr[data-user-id="${editedUserId}"]`);
+        if (!row) return;
+
+        row.classList.add('ring-2', 'ring-primary/50', 'bg-primary/5', 'animate-pulse');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        setTimeout(() => {
+            row.classList.remove('animate-pulse');
+        }, 3500);
+
+        setTimeout(() => {
+            row.classList.remove('ring-2', 'ring-primary/50', 'bg-primary/5');
+        }, 7000);
+    })();
 </script>
