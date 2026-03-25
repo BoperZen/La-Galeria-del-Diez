@@ -143,6 +143,67 @@
     </div>
 </div>
 
+<div id="confirmSaveObjectEditModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
+    <div class="w-full max-w-md rounded-xl border border-border bg-card shadow-2xl">
+        <div class="px-6 py-4 border-b border-border">
+            <h3 class="text-lg font-bold text-foreground flex items-center">
+                <i class="bi bi-patch-question mr-2 text-primary"></i>
+                Confirmar edición
+            </h3>
+        </div>
+        <div class="px-6 py-5 text-sm text-muted-foreground">
+            ¿Desea guardar los cambios de este objeto?
+        </div>
+        <div class="px-6 py-4 border-t border-border flex justify-end gap-3">
+            <button type="button" id="cancelSaveObjectEditBtn"
+                    class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold">
+                Cancelar
+            </button>
+            <button type="button" id="confirmSaveObjectEditBtn"
+                    class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-colors font-semibold">
+                Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const form = document.getElementById('objectEditForm');
+            const modal = document.getElementById('confirmSaveObjectEditModal');
+            const cancelBtn = document.getElementById('cancelSaveObjectEditBtn');
+            const confirmBtn = document.getElementById('confirmSaveObjectEditBtn');
+            let confirmed = false;
+
+            if (!form || !modal || !cancelBtn || !confirmBtn) return;
+
+            form.addEventListener('submit', function (e) {
+                if (confirmed) return;
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+
+            cancelBtn.addEventListener('click', function () {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+
+            confirmBtn.addEventListener('click', function () {
+                confirmed = true;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                form.submit();
+            });
+
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        })();
+    </script>
 }
