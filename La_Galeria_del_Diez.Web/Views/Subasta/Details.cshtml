@@ -79,6 +79,15 @@ var isActive = Model.EndDate > DateTime.Now;
                     <i class="bi bi-box-seam mr-2"></i>
                     Ver Detalle del Objeto
                 </a>
+
+                @if (isActive)
+                {
+                    <a asp-controller="Pujas" asp-action="Index" asp-route-auctionId="@Model.Id"
+                       class="w-full inline-flex items-center justify-center px-4 py-3 mt-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                        <i class="bi bi-cash-coin mr-2"></i>
+                        Pujar por este objeto
+                    </a>
+                }
             </div>
 
             <!-- DERECHA: Información de la Subasta (2 de 3 columnas) -->
