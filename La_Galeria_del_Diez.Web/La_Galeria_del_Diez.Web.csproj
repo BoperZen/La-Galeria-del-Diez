@@ -21,4 +21,8 @@
     <ProjectReference Include="..\La_Galeria_del_Diez.Infraestructure\La_Galeria_del_Diez.Infraestructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Pujas\" />
+  </ItemGroup>
+
 </Project>
