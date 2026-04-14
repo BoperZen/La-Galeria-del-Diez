@@ -54,10 +54,11 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             return count;
         }
 
-        public async Task AddAsync(User user)
+        public async Task<User> AddAsync(User user)
         {
             _context.Set<User>().Add(user);
             await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task UpdateAsync(User user)

@@ -83,11 +83,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositoryUser, RepositoryUser>();
 builder.Services.AddTransient<IRepositoryObject, RepositoryObject>();
 builder.Services.AddTransient<IRepositoryAuction, RepositoryAuction>();
+builder.Services.AddTransient<IRepositoryBidding, RepositoryBidding>();
 
 //*** Services 
 builder.Services.AddTransient<IServiceUser, ServiceUser>();
 builder.Services.AddTransient<IServiceObject, ServiceObject>();
 builder.Services.AddTransient<IServiceAuction, ServiceAuction>();
+builder.Services.AddTransient<IServiceBidding, ServiceBidding>();
 
 // ======================= 
 // Configurar AutoMapper 

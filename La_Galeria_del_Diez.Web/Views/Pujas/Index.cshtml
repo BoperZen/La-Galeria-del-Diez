@@ -1,6 +1,8 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model La_Galeria_del_Diez.Web.Models.BiddingCreateViewModel
+
 @{
     ViewData["Title"] = "Nueva Puja";
 }
@@ -16,38 +18,68 @@
                 <p class="text-muted-foreground">Completa la información para registrar tu puja.</p>
             </div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
             <div class="bg-card rounded-xl shadow-lg border border-border p-6">
-                <form class="space-y-6">
+                <form asp-action="Create" method="post" class="space-y-6">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-sm text-red-500"></div>
+                    <input type="hidden" asp-for="AuctionId" />
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="text-sm font-semibold text-foreground">Subasta</label>
                             <input type="text"
-                                   placeholder="ID o nombre de la subasta"
-                                   class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring">
+                                   value="@Model.AuctionName"
+                                   readonly
+                                   class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                            <div class="mt-2 text-xs text-muted-foreground">
+                                Precio actual: <span class="font-semibold text-foreground">$@Model.CurrentPrice.ToString("N0")</span>
+                                · Incremento mínimo: <span class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</span>
+                            </div>
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-foreground">Monto de la puja</label>
-                            <input type="number"
+                            <input asp-for="Amount"
+                                   type="number"
                                    min="0"
                                    step="0.01"
                                    placeholder="Ingresa tu oferta"
                                    class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring">
+                            <span asp-validation-for="Amount" class="text-xs text-red-500"></span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="text-sm font-semibold text-foreground">Nombre completo</label>
-                            <input type="text"
+                            <input asp-for="BuyerName"
+                                   type="text"
                                    placeholder="Tu nombre"
                                    class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring">
+                            <span asp-validation-for="BuyerName" class="text-xs text-red-500"></span>
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-foreground">Correo electrónico</label>
-                            <input type="email"
+                            <input asp-for="BuyerEmail"
+                                   type="email"
                                    placeholder="tucorreo@dominio.com"
                                    class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring">
+                            <span asp-validation-for="BuyerEmail" class="text-xs text-red-500"></span>
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-semibold text-foreground">Método de pago</label>
+                        <select asp-for="PaymentMethod"
+                                class="mt-2 w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="">Selecciona un método</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Efectivo">Efectivo</option>
+                        </select>
+                        <span asp-validation-for="PaymentMethod" class="text-xs text-red-500"></span>
                     </div>
 
                     <div>

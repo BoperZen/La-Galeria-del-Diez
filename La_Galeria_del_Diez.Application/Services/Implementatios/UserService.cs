@@ -31,6 +31,13 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             return _mapper.Map<ICollection<UserDTO>>(list);
         }
 
+        public async Task<UserDTO> AddAsync(UserDTO dto)
+        {
+            var user = _mapper.Map<User>(dto);
+            var created = await _repository.AddAsync(user);
+            return _mapper.Map<UserDTO>(created);
+        }
+
         public async Task UpdateAsync(UserDTO dto)
         {
             var user = _mapper.Map<User>(dto);
