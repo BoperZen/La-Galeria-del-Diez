@@ -61,7 +61,12 @@ var isActive = Model.EndDate > DateTime.Now;
     }
 
     .bid-meta {
-        font-size: 13px;
+        font-size: 0.85rem;
+    }
+
+    .bid-title {
+        font-size: 0.95rem;
+        font-weight: 600;
     }
 
     .bid-meta + .bid-meta {
@@ -86,9 +91,20 @@ var isActive = Model.EndDate > DateTime.Now;
         opacity: 0.6;
         cursor: not-allowed;
     }
+
+    .details-scope .text-xl,
+    .details-scope .text-lg,
+    .details-scope .text-base {
+        font-size: 0.95rem;
+    }
+
+    .details-scope .text-sm,
+    .details-scope .text-xs {
+        font-size: 0.85rem;
+    }
 </style>
 
-<div class="min-h-screen bg-background py-8">
+<div class="min-h-screen bg-background py-8 details-scope">
     <div class="container mx-auto px-4 max-w-6xl">
         <!-- Breadcrumb -->
         <div class="mb-4">
@@ -157,7 +173,7 @@ var isActive = Model.EndDate > DateTime.Now;
                 </a>
 
                 <details class="w-full mt-3 bid-card border border-border bg-card">
-                    <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between text-sm font-semibold text-foreground">
+                    <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
                         <span class="flex items-center">
                             <i class="bi bi-cash-coin mr-2 text-primary"></i>
                             Pujar por este objeto
@@ -166,7 +182,7 @@ var isActive = Model.EndDate > DateTime.Now;
                     </summary>
                     <div class="px-4 pb-4 pt-2 space-y-4">
                         <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
-                            <div class="text-xs text-muted-foreground">
+                            <div class="bid-meta text-muted-foreground">
                                 Última puja registrada
                             </div>
                             <div class="bid-controls">
@@ -202,11 +218,11 @@ var isActive = Model.EndDate > DateTime.Now;
                             </div>
                             @if (!isActive)
                             {
-                                <div class="text-xs text-red-400">La subasta no está activa.</div>
+                                <div class="bid-meta text-red-400">La subasta no está activa.</div>
                             }
                             @if (currentUserId == Model.IdUser)
                             {
-                                <div class="text-xs text-red-400">El vendedor no puede pujar en su propia subasta.</div>
+                                <div class="bid-meta text-red-400">El vendedor no puede pujar en su propia subasta.</div>
                             }
                         </div>
 
@@ -376,16 +392,16 @@ var isActive = Model.EndDate > DateTime.Now;
                                         </div>
 
                                         <!-- Monto -->
+                                        @if (isHighestBid)
+                                        {
+                                            <div class="text-xs bg-primary text-primary-foreground p-1 rounded-full font-semibold">
+                                                Más alta
+                                            </div>
+                                        }
                                         <div class="text-right">
                                             <div class="font-bold text-primary text-base">
                                                 $@bidding.Amount.ToString("N0")
                                             </div>
-                                            @if (isHighestBid)
-                                            {
-                                                <span class="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-semibold">
-                                                    Más alta
-                                                </span>
-                                            }
                                         </div>
 
                                         <!-- Fecha y Hora -->
