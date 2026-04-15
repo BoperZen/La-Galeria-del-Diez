@@ -346,7 +346,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction(nameof(Borrador));
             }
 
-            await _serviceAuction.UpdateStateAsync(id, 1);
+            await _serviceAuction.UpdateStateAsync(id, 4);
 
             TempData["SwalSuccess"] = JsonSerializer.Serialize(new
             {

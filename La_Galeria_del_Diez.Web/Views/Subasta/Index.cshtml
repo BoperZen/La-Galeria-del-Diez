@@ -178,7 +178,7 @@
                                     Ver Detalle
                                 </a>
                             </div>
-                            @if(auction.StartDate > DateTime.Now)
+                            @if(auction.StartDate > DateTime.Now && auction.Biddings.Count == 0)
                             {
                                 <form asp-controller="Subasta" asp-action="Delete" asp-route-id="@auction.Id" method="post" class="flex-1 mt-2">
                                     @Html.AntiForgeryToken()

@@ -197,23 +197,7 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                 return;
             }
 
-            // No permitir eliminar si el objeto tiene cualquier subasta asociada (activa o histórica)
-            if (existing.Auction.Any())
-            {
-                throw new InvalidOperationException("No se puede eliminar el objeto porque tiene subastas asociadas.");
-            }
-
-            if (existing.Image.Any())
-            {
-                _context.Set<Image>().RemoveRange(existing.Image);
-            }
-
-            if (existing.IdCategory.Any())
-            {
-                existing.IdCategory.Clear();
-            }
-
-            _context.Set<AuctionableObject>().Remove(existing);
+            existing.IdState = 4;
             await _context.SaveChangesAsync();
         }
 

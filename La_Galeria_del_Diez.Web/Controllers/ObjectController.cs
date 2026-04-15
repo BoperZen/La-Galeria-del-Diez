@@ -181,8 +181,8 @@ namespace La_Galeria_del_Diez.Web.Controllers
 
                 TempData["SwalSuccess"] = JsonSerializer.Serialize(new
                 {
-                    title = "Objeto eliminado",
-                    text = "El objeto fue eliminado correctamente.",
+                    title = "Objeto cancelado",
+                    text = "El objeto fue marcado como cancelado.",
                     icon = "success"
                 });
             }
