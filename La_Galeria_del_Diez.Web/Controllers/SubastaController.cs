@@ -66,6 +66,8 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction("Index");
             }
 
+            ViewBag.CurrentUserId = IdUser;
+
             return View(auction);
         }
 

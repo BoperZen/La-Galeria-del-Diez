@@ -10,9 +10,101 @@ var isActive = Model.EndDate > DateTime.Now;
     var currentPrice = Model.Biddings?.Any() == true 
         ? Model.Biddings.Max(b => b.Amount) 
         : Model.BasePrice;
+    var currentUserId = ViewBag.CurrentUserId is int id ? id : 0;
+    var canBid = isActive && currentUserId > 0 && currentUserId != Model.IdUser;
+    var nextBidAmount = currentPrice + Model.MinIncrement;
 }
 
-<div class="min-h-screen bg-background py-8">
+<style>
+    .bid-card {
+        border-radius: 14px;
+    }
+
+    .bid-control {
+        min-width: 36px;
+        min-height: 36px;
+        border-radius: 9999px;
+        background-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .bid-control:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .bid-control:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+
+    .bid-control:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .bid-amount {
+        min-width: 140px;
+        flex: 1;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        border-radius: 10px;
+    }
+
+    .bid-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .bid-meta {
+        font-size: 0.85rem;
+    }
+
+    .bid-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .bid-meta + .bid-meta {
+        margin-top: 0.5rem;
+    }
+
+    .bid-submit {
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: filter 0.2s ease;
+    }
+
+    .bid-submit:hover:not(:disabled) {
+        filter: brightness(1.08);
+    }
+
+    .bid-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .details-scope .text-xl,
+    .details-scope .text-lg,
+    .details-scope .text-base {
+        font-size: 0.95rem;
+    }
+
+    .details-scope .text-sm,
+    .details-scope .text-xs {
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="min-h-screen bg-background py-8 details-scope">
     <div class="container mx-auto px-4 max-w-6xl">
         <!-- Breadcrumb -->
         <div class="mb-4">
@@ -80,14 +172,70 @@ var isActive = Model.EndDate > DateTime.Now;
                     Ver Detalle del Objeto
                 </a>
 
-                @if (isActive)
-                {
-                    <a asp-controller="Pujas" asp-action="Index" asp-route-id="@Model.Id"
-                       class="w-full inline-flex items-center justify-center px-4 py-3 mt-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
-                        <i class="bi bi-cash-coin mr-2"></i>
-                        Pujar por este objeto
-                    </a>
-                }
+                <details class="w-full mt-3 bid-card border border-border bg-card">
+                    <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
+                        <span class="flex items-center">
+                            <i class="bi bi-cash-coin mr-2 text-primary"></i>
+                            Pujar por este objeto
+                        </span>
+                        <i class="bi bi-chevron-down text-xs transition-transform"></i>
+                    </summary>
+                    <div class="px-4 pb-4 pt-2 space-y-4">
+                        <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
+                            <div class="bid-meta text-muted-foreground">
+                                Última puja registrada
+                            </div>
+                            <div class="bid-controls">
+                                <button type="button"
+                                        class="bid-control border border-border text-foreground"
+                                        data-bid-action="decrease"
+                                        @(canBid ? "" : "disabled")>
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="text"
+                                       id="bidAmountInput"
+                                       value="@nextBidAmount.ToString("N0")"
+                                       data-step="@Model.MinIncrement"
+                                       data-min="@nextBidAmount"
+                                       class="bid-amount text-center px-4 py-2 bg-muted border border-border text-foreground"
+                                       readonly>
+                                <button type="button"
+                                        class="bid-control border border-border text-foreground"
+                                        data-bid-action="increase"
+                                        @(canBid ? "" : "disabled")>
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <div class="flex justify-between">
+                                <div>
+                                    <div class="bid-meta text-muted-foreground">Precio actual</div>
+                                    <div class="font-semibold text-foreground">$@currentPrice.ToString("N0")</div>
+                                </div>
+                                <div>
+                                    <div class="bid-meta text-muted-foreground">Incremento mínimo</div>
+                                    <div class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</div>
+                                </div>
+                            </div>
+                            @if (!isActive)
+                            {
+                                <div class="bid-meta text-red-400">La subasta no está activa.</div>
+                            }
+                            @if (currentUserId == Model.IdUser)
+                            {
+                                <div class="bid-meta text-red-400">El vendedor no puede pujar en su propia subasta.</div>
+                            }
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="button"
+                                    class="bid-submit bg-primary text-primary-foreground hover:bg-secondary shadow-lg @(canBid ? "" : "")"
+                                    @(canBid ? "" : "disabled")>
+                                <i class="bi bi-arrow-right-circle"></i>
+                                Pujar
+                            </button>
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <!-- DERECHA: Información de la Subasta (2 de 3 columnas) -->
@@ -104,6 +252,34 @@ var isActive = Model.EndDate > DateTime.Now;
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-calendar-check text-muted-foreground text-xs"></i>
                         </div>
+
+<script>
+    document.querySelectorAll('[data-bid-action]')?.forEach((button) => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById('bidAmountInput');
+            if (!input) {
+                return;
+            }
+
+            const step = Number(input.dataset.step || '0');
+            const min = Number(input.dataset.min || '0');
+            const raw = input.value.replace(/,/g, '');
+            const current = Number(raw || '0');
+            const action = button.getAttribute('data-bid-action');
+            let next = current;
+
+            if (action === 'increase') {
+                next = current + step;
+            }
+
+            if (action === 'decrease') {
+                next = Math.max(min, current - step);
+            }
+
+            input.value = next.toLocaleString('en-US');
+        });
+    });
+</script>
                         <div>
                             <div class="text-xs text-muted-foreground">Fecha de Inicio</div>
                             <div class="font-semibold text-foreground text-sm">
@@ -216,16 +392,16 @@ var isActive = Model.EndDate > DateTime.Now;
                                         </div>
 
                                         <!-- Monto -->
+                                        @if (isHighestBid)
+                                        {
+                                            <div class="text-xs bg-primary text-primary-foreground p-1 rounded-full font-semibold">
+                                                Más alta
+                                            </div>
+                                        }
                                         <div class="text-right">
                                             <div class="font-bold text-primary text-base">
                                                 $@bidding.Amount.ToString("N0")
                                             </div>
-                                            @if (isHighestBid)
-                                            {
-                                                <span class="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-semibold">
-                                                    Más alta
-                                                </span>
-                                            }
                                         </div>
 
                                         <!-- Fecha y Hora -->
