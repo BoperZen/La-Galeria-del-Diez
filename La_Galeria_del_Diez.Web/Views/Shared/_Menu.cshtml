@@ -9,7 +9,7 @@
                     </svg>
                     <div class="hidden lg:block">
                         <div class="text-xl font-bold">La Galería del Diez</div>
-                        <div class="text-xs text-muted-foreground">Subastas de Camisetas</div>
+                        <div class="text-xs text-muted-foreground">Jersey Auctions</div>
                     </div>
                 </a>
             </div>
@@ -35,7 +35,7 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @@click="open = !open" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-muted transition-colors">
                         <img src="~/images/profile.png" alt="Profile" class="w-8 h-8 rounded-full border-2 border-primary">
-                        <span class="hidden md:block text-foreground text-sm font-medium">Invitado</span>
+                        <span class="hidden md:block text-foreground text-sm font-medium">Guest</span>
                         <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -54,13 +54,13 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <a asp-controller="Login" asp-action="LogOff" class="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors">
-                                <i class="bi bi-box-arrow-right mr-2"></i>Salir
+                                <i class="bi bi-box-arrow-right mr-2"></i>Sign out
                             </a>
                         }
                         else
                         {
                             <a asp-controller="Login" asp-action="Index" class="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors">
-                                <i class="bi bi-box-arrow-in-right mr-2"></i>Ingresar
+                                <i class="bi bi-box-arrow-in-right mr-2"></i>Sign in
                             </a>
                         }
                     </div>
@@ -75,16 +75,19 @@
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-center space-x-1 py-3">
             <a href="/" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-house-door mr-2"></i>Inicio
+                <i class="bi bi-house-door mr-2"></i>Home
             </a>
             <a href="/Subasta" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-hammer mr-2"></i>Subastas
+                <i class="bi bi-hammer mr-2"></i>Auctions
             </a>
             <a href="/Object" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-box-seam mr-2"></i>Objetos
+                <i class="bi bi-box-seam mr-2"></i>Objects
+            </a>
+            <a href="/Payment" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
+                <i class="bi bi-credit-card mr-2"></i>Payments
             </a>
             <a href="/User" class="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary hover:bg-card rounded-md transition-all duration-200 whitespace-nowrap">
-                <i class="bi bi-people mr-2"></i>Usuarios
+                <i class="bi bi-people mr-2"></i>Users
             </a>
         </div>
     </div>

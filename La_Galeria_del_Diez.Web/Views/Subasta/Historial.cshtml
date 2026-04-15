@@ -1,7 +1,7 @@
 @model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
 
 @{
-    ViewData["Title"] = "Historial de Pujas";
+    ViewData["Title"] = "Bid History";
     var objectName = ViewBag.ObjectName as string;
     var objectId = (int)ViewBag.ObjectId;
 }
@@ -16,13 +16,13 @@
             <div class="flex-1">
                 <h1 class="text-3xl font-bold text-foreground flex items-center">
                     <i class="bi bi-clock-history text-primary mr-3"></i>
-                    Historial de Pujas
+                    Bid History
                 </h1>
                 <p class="text-muted-foreground mt-1">@objectName</p>
             </div>
         </div>
 
-        <!-- Resumen de la Subasta -->
+        <!-- Auction Summary -->
         <div class="bg-card rounded-xl shadow-lg border border-border p-6 mb-8">
             <div class="flex items-center gap-6">
                 <img src="@Url.Action("GetImage", "Image", new { objectId = objectId })" 
@@ -84,9 +84,9 @@
                                 }
                             </div>
 
-                            <!-- Contenido de la puja -->
+                            <!-- Bid content -->
                             <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                                <!-- Usuario -->
+                                <!-- User -->
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                                         <span class="text-primary font-bold text-lg">
@@ -94,22 +94,22 @@
                                         </span>
                                     </div>
                                     <div>
-                                        <p class="text-xs text-muted-foreground">Usuario</p>
-                                        <p class="font-semibold text-foreground">Usuario #@bid.IdUser</p>
+                                        <p class="text-xs text-muted-foreground">User</p>
+                                        <p class="font-semibold text-foreground">User #@bid.IdUser</p>
                                     </div>
                                 </div>
 
-                                <!-- Monto -->
+                                <!-- Amount -->
                                 <div>
-                                    <p class="text-xs text-muted-foreground mb-1">Monto Ofertado</p>
+                                    <p class="text-xs text-muted-foreground mb-1">Bid Amount</p>
                                     <p class="text-2xl font-bold @(isHighest ? "text-primary" : "text-foreground")">
                                         $@bid.Amount.ToString("N0")
                                     </p>
                                 </div>
 
-                                <!-- Fecha y Hora -->
+                                <!-- Date and Time -->
                                 <div>
-                                    <p class="text-xs text-muted-foreground mb-1">Fecha y Hora</p>
+                                    <p class="text-xs text-muted-foreground mb-1">Date and Time</p>
                                     <p class="font-semibold text-foreground">
                                         <i class="bi bi-calendar mr-1"></i>
                                         @bid.RegistrationDate.ToString("dd/MM/yyyy")

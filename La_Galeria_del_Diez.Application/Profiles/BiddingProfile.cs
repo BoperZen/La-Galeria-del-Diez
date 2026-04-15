@@ -13,7 +13,11 @@ namespace La_Galeria_del_Diez.Application.Profiles
     {
         public BiddingProfile()
         {
-            CreateMap<Bidding, BiddingDTO>().ReverseMap();
+            CreateMap<Bidding, BiddingDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.IdUserNavigation.Username))
+                .ReverseMap()
+                .ForMember(dest => dest.IdUserNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.IdAuctionNavigation, opt => opt.Ignore());
         }
     }
 }

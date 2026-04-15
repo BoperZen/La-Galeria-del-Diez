@@ -13,6 +13,8 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
         Task<ICollection<AuctionDTO>> ListActiveAsync(DateTime now);
         Task<ICollection<AuctionDTO>> ListFinishedAsync(DateTime now);
         Task<ICollection<AuctionDTO>> ListDraftAsync(DateTime now);
+        Task<ICollection<AuctionDTO>> ListPendingPaymentByWinnerAsync(int winnerUserId);
+        Task<ICollection<int>> CloseExpiredAuctionsAsync(DateTime now);
         Task<AuctionDTO?> FindByIdAsync(int id);
         Task AddAsync(AuctionDTO dto);
         Task UpdateAsync(int id, AuctionDTO dto);

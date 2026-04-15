@@ -3,7 +3,7 @@
 @using X.PagedList.Mvc.Core
 
 @{
-    ViewData["Title"] = "Objetos Subastables";
+    ViewData["Title"] = "Auctionable Objects";
 }
 
 <div class="min-h-screen bg-background py-8">
@@ -14,32 +14,32 @@
                 <div>
                     <h1 class="text-4xl font-bold text-foreground mb-2 flex items-center">
                         <i class="bi bi-box-seam text-primary mr-3"></i>
-                        Objetos Subastables
+                        Auctionable Objects
                     </h1>
-                    <p class="text-muted-foreground">Administra los objetos disponibles para subasta</p>
+                    <p class="text-muted-foreground">Manage objects available for auction</p>
                 </div>
                 <a asp-action="Create" 
                    class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
                     <i class="bi bi-plus-lg mr-2"></i>
-                    Nuevo Objeto
+                    New Object
                 </a>
             </div>
 
-            <!-- Filtros -->
+            <!-- Filters -->
             <div class="bg-card rounded-xl shadow-lg p-6 border border-border">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
                         <input type="text" 
                                id="searchInput"
-                               placeholder="Buscar por nombre..." 
+                               placeholder="Search by name..." 
                                class="w-full px-4 py-2.5 pl-10 bg-muted border border-border rounded-lg text-foreground placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-ring">
                         <i class="bi bi-search absolute left-3 top-3 text-muted-foreground"></i>
                     </div>
                     <select class="px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-                        <option>Todos los estados</option>
-                        <option>En subasta</option>
-                        <option>Disponible</option>
-                        <option>Vendido</option>
+                        <option>All statuses</option>
+                        <option>In auction</option>
+                        <option>Available</option>
+                        <option>Sold</option>
                     </select>
                 </div>
             </div>
@@ -47,7 +47,7 @@
 
         @if (Model.Any())
         {
-            <!-- Grid de Objetos -->
+            <!-- Objects Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" id="objectsGrid">
                 @foreach (var obj in Model)
                 {
@@ -55,7 +55,7 @@
                     var auction = obj.Auctions.FirstOrDefault(a => a.EndDate > DateTime.Now);
 
                     <div class="group bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 object-card">
-                        <!-- Imagen -->
+                        <!-- Image -->
                         <div class="relative h-56 overflow-hidden bg-muted">
                             @if (obj.Images.Any())
                             {
@@ -71,27 +71,27 @@
                                 </div>
                             }
 
-                            <!-- Badge de estado -->
+                            <!-- Status badge -->
                             <div class="absolute top-3 right-3">
                                 @if (hasAuction)
                                 {
                                     <span class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-bold rounded-full shadow-lg">
                                         <i class="bi bi-hammer mr-1"></i>
-                                        En Subasta
+                                        In Auction
                                     </span>
                                 }
                                 else
                                 {
                                     <span class="px-3 py-1.5 bg-accent/90 text-white text-xs font-bold rounded-full shadow-lg">
-                                        Disponible
+                                        Available
                                     </span>
                                 }
                             </div>
                         </div>
 
-                        <!-- Contenido -->
+                        <!-- Content -->
                         <div class="p-5">
-                            <!-- Categorías -->
+                            <!-- Categories -->
                             @if (obj.Categories.Any())
                             {
                                 <div class="flex flex-wrap gap-2 mb-3">
@@ -104,7 +104,7 @@
                                 </div>
                             }
 
-                            <!-- Nombre -->
+                            <!-- Name -->
                             <h3 class="font-bold text-foreground text-lg mb-2 line-clamp-2 min-h-[3.5rem]">
                                 @obj.Name
                             </h3>
@@ -112,11 +112,11 @@
                             <!-- Info Grid -->
                             <div class="grid grid-cols-2 gap-3 mb-4">
                                 <div class="bg-muted/30 rounded-lg p-3">
-                                    <p class="text-xs text-muted-foreground mb-1">Condición</p>
-                                    <p class="text-sm font-semibold text-foreground">@(obj.Condition ?? "Nueva")</p>
+                                    <p class="text-xs text-muted-foreground mb-1">Condition</p>
+                                    <p class="text-sm font-semibold text-foreground">@(obj.Condition ?? "New")</p>
                                 </div>
                                 <div class="bg-muted/30 rounded-lg p-3">
-                                    <p class="text-xs text-muted-foreground mb-1">Estado</p>
+                                    <p class="text-xs text-muted-foreground mb-1">Status</p>
                                     <p class="text-sm font-semibold text-foreground">@obj.State.Description</p>
                                 </div>
                             </div>
@@ -126,22 +126,22 @@
                                 <div class="bg-primary/10 border border-primary/30 rounded-lg p-3 mb-4">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-xs text-primary mb-1">Precio Base</p>
+                                            <p class="text-xs text-primary mb-1">Base Price</p>
                                             <p class="text-lg font-bold text-primary">$@auction.BasePrice.ToString("N0")</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-xs text-muted-foreground mb-1">Pujas</p>
+                                            <p class="text-xs text-muted-foreground mb-1">Bids</p>
                                             <p class="text-sm font-bold text-foreground">@auction.Biddings.Count</p>
                                         </div>
                                     </div>
                                 </div>
                             }
 
-                            <!-- Botones de acción -->
+                            <!-- Action buttons -->
                             <div class="flex gap-2">
                                 <a asp-action="Details" asp-route-id="@obj.Id"
                                    class="inline-flex items-center justify-center px-4 py-2.5 bg-accent text-accent-foreground rounded-lg hover:opacity-90 transition-all font-semibold text-sm"
-                                   title="Ver">
+                                   title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
@@ -150,7 +150,7 @@
                                     <button type="button"
                                             disabled
                                             class="inline-flex items-center justify-center px-4 py-2.5 bg-primary/5 text-primary/40 border border-primary/10 rounded-lg cursor-not-allowed font-semibold text-sm"
-                                            title="No se puede editar: objeto con subasta activa">
+                                            title="Cannot edit: object has an active auction">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                 }
@@ -158,7 +158,7 @@
                                 {
                                     <a asp-action="Edit" asp-route-id="@obj.Id"
                                        class="inline-flex items-center justify-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold text-sm"
-                                       title="Editar">
+                                       title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 }
@@ -168,7 +168,7 @@
                                     <button type="button"
                                             disabled
                                             class="inline-flex items-center justify-center px-4 py-2.5 bg-red-500/5 text-red-300/60 border border-red-500/10 rounded-lg cursor-not-allowed font-semibold text-sm"
-                                            title="No se puede eliminar: objeto con subasta activa">
+                                            title="Cannot delete: object has an active auction">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 }
@@ -178,7 +178,7 @@
                                             class="delete-object-btn inline-flex items-center justify-center px-4 py-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all font-semibold text-sm"
                                             data-form-id="delete-form-@obj.Id"
                                             data-object-name="@obj.Name"
-                                            title="Eliminar">
+                                            title="Delete">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 }
@@ -193,7 +193,7 @@
                 }
             </div>
 
-            <!-- Paginación -->
+            <!-- Pagination -->
             <div class="flex justify-center">
                 <div class="bg-card rounded-xl shadow-lg border border-border p-4">
                     @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
@@ -215,14 +215,14 @@
                     <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="bi bi-box-seam text-6xl text-primary"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-foreground mb-3">No hay objetos registrados</h3>
+                    <h3 class="text-2xl font-bold text-foreground mb-3">No objects registered</h3>
                     <p class="text-muted-foreground mb-6">
-                        Comienza agregando el primer objeto subastable al sistema
+                        Start by adding the first auctionable object to the system
                     </p>
                     <a asp-action="Create" 
                        class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
                         <i class="bi bi-plus-lg mr-2"></i>
-                        Crear Primer Objeto
+                        Create First Object
                     </a>
                 </div>
             </div>
@@ -235,27 +235,27 @@
         <div class="px-6 py-4 border-b border-border">
             <h3 class="text-lg font-bold text-foreground flex items-center">
                 <i class="bi bi-exclamation-triangle mr-2 text-red-400"></i>
-                Confirmar eliminación
+                Confirm Deletion
             </h3>
         </div>
         <div class="px-6 py-5 text-sm text-muted-foreground">
-            ¿Desea eliminar el objeto <span id="deleteObjectName" class="font-semibold text-foreground"></span>?
+            Do you want to delete object <span id="deleteObjectName" class="font-semibold text-foreground"></span>?
         </div>
         <div class="px-6 py-4 border-t border-border flex justify-end gap-3">
             <button type="button" id="cancelDeleteBtn"
                     class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold">
-                Cancelar
+                Cancel
             </button>
             <button type="button" id="confirmDeleteBtn"
                     class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold">
-                Eliminar
+                Delete
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    // Búsqueda en tiempo real
+    // Live search
     document.getElementById('searchInput')?.addEventListener('input', function(e) {
         const searchTerm = e.target.value.toLowerCase();
         const cards = document.querySelectorAll('.object-card');
@@ -266,7 +266,7 @@
         });
     });
 
-    // Confirmación visual de eliminación
+    // Visual delete confirmation
     (function () {
         const modal = document.getElementById('confirmDeleteModal');
         const cancelBtn = document.getElementById('cancelDeleteBtn');
@@ -281,7 +281,7 @@
         deleteButtons.forEach(btn => {
             btn.addEventListener('click', function () {
                 selectedFormId = this.getAttribute('data-form-id');
-                const objectName = this.getAttribute('data-object-name') || 'seleccionado';
+                const objectName = this.getAttribute('data-object-name') || 'selected';
                 objectNameLabel.textContent = `"${objectName}"`;
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');

@@ -1,0 +1,71 @@
+@model La_Galeria_del_Diez.Web.Models.PaymentProcessViewModel
+
+@{
+    ViewData["Title"] = "Process Payment";
+}
+
+<div class="min-h-screen bg-background py-10">
+    <div class="container mx-auto px-4 max-w-3xl">
+        <div class="mb-6">
+            <a asp-action="Index" class="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+                <i class="bi bi-arrow-left mr-2"></i>
+                Back to pending payments
+            </a>
+        </div>
+
+        <h1 class="text-3xl font-bold text-foreground mb-2">Card payment</h1>
+        <p class="text-muted-foreground mb-6">Complete all card details to process the payment for <strong>@Model.AuctionName</strong>.</p>
+
+        <div class="bg-card rounded-xl border border-border p-6 shadow-lg">
+            <form asp-action="Pay" method="post" class="space-y-5">
+                @Html.AntiForgeryToken()
+                <input asp-for="AuctionId" type="hidden" />
+                <input asp-for="AuctionName" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-red-400 text-sm"></div>
+
+                <div>
+                    <label asp-for="CardholderName" class="block text-sm font-semibold text-foreground mb-2">Cardholder name</label>
+                    <input asp-for="CardholderName" class="w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground" maxlength="100" />
+                    <span asp-validation-for="CardholderName" class="text-red-400 text-sm"></span>
+                </div>
+
+                <div>
+                    <label asp-for="CardNumber" class="block text-sm font-semibold text-foreground mb-2">Card number</label>
+                    <input asp-for="CardNumber" class="w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground" inputmode="numeric" maxlength="16" placeholder="1234123412341234" />
+                    <span asp-validation-for="CardNumber" class="text-red-400 text-sm"></span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label asp-for="ExpirationMonth" class="block text-sm font-semibold text-foreground mb-2">Expiration month</label>
+                        <input asp-for="ExpirationMonth" class="w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground" type="number" min="1" max="12" placeholder="MM" />
+                        <span asp-validation-for="ExpirationMonth" class="text-red-400 text-sm"></span>
+                    </div>
+                    <div>
+                        <label asp-for="ExpirationYear" class="block text-sm font-semibold text-foreground mb-2">Expiration year</label>
+                        <input asp-for="ExpirationYear" class="w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground" type="number" min="2024" max="2100" placeholder="YYYY" />
+                        <span asp-validation-for="ExpirationYear" class="text-red-400 text-sm"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Cvv" class="block text-sm font-semibold text-foreground mb-2">CVV</label>
+                    <input asp-for="Cvv" class="w-full px-4 py-2.5 bg-muted border border-border rounded-lg text-foreground" inputmode="numeric" maxlength="4" placeholder="123" />
+                    <span asp-validation-for="Cvv" class="text-red-400 text-sm"></span>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold shadow-lg">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        Process payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

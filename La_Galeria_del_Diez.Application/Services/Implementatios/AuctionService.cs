@@ -53,6 +53,31 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             return _mapper.Map<ICollection<AuctionDTO>>(list);
         }
 
+        public async Task<ICollection<AuctionDTO>> ListPendingPaymentByWinnerAsync(int winnerUserId)
+        {
+            var list = await _repository.ListPendingPaymentAsync();
+            var auctions = _mapper.Map<ICollection<AuctionDTO>>(list);
+
+            return auctions
+                .Where(a =>
+                {
+                    var leadingBid = a.Biddings?
+                        .OrderByDescending(b => b.Amount)
+                        .ThenByDescending(b => b.RegistrationDate)
+                        .FirstOrDefault();
+
+                    var resolvedWinner = a.AutionWinner ?? leadingBid?.IdUser;
+                    return resolvedWinner == winnerUserId;
+                })
+                .OrderByDescending(a => a.EndDate)
+                .ToList();
+        }
+
+        public async Task<ICollection<int>> CloseExpiredAuctionsAsync(DateTime now)
+        {
+            return await _repository.CloseExpiredAuctionsAsync(now);
+        }
+
         public async Task AddAsync(AuctionDTO dto)
         {
             var auction = _mapper.Map<Auction>(dto);

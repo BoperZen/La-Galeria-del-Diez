@@ -1,6 +1,6 @@
 ﻿@using System.Text.Json
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -51,7 +51,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @{
         var swalSuccess = TempData["SwalSuccess"] as string;
-        var swalError = ViewData["SwalError"] as string;
+        var swalError = (TempData["SwalError"] as string) ?? (ViewData["SwalError"] as string);
     }
     @if (!string.IsNullOrWhiteSpace(swalSuccess))
     {

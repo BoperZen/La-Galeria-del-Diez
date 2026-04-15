@@ -79,6 +79,23 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             return collection;
         }
 
+        public async Task<ICollection<Auction>> ListPendingPaymentAsync()
+        {
+            var collection = await _context.Set<Auction>()
+                                           .Include(a => a.IdObjectNavigation)
+                                               .ThenInclude(o => o.Image)
+                                           .Include(a => a.IdUserNavigation)
+                                           .Include(a => a.IdStateNavigation)
+                                           .Include(a => a.Winner)
+                                           .Include(a => a.Bidding)
+                                               .ThenInclude(b => b.IdUserNavigation)
+                                           .AsSplitQuery()
+                                           .AsNoTracking()
+                                           .Where(a => a.IdState == 3)
+                                           .ToListAsync();
+            return collection;
+        }
+
         public async Task<ICollection<Auction>> ListFinishedAsync(DateTime now)
         {
             var collection = await _context.Set<Auction>()
@@ -92,6 +109,45 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                                            .Where(a => a.EndDate <= now)
                                            .ToListAsync();
             return collection;
+        }
+
+        public async Task<ICollection<int>> CloseExpiredAuctionsAsync(DateTime now)
+        {
+            var finalizedStateId = await _context.Set<State>()
+                .Where(s => EF.Functions.Like(s.Description, "%Final%"))
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync();
+
+            if (finalizedStateId <= 0)
+            {
+                finalizedStateId = 3;
+            }
+
+            var expiredAuctions = await _context.Set<Auction>()
+                .Include(a => a.Bidding)
+                .Where(a => a.IdState == 2 && a.EndDate <= now)
+                .ToListAsync();
+
+            if (!expiredAuctions.Any())
+            {
+                return Array.Empty<int>();
+            }
+
+            foreach (var auction in expiredAuctions)
+            {
+                auction.IdState = finalizedStateId;
+
+                var winnerBid = auction.Bidding
+                    .OrderByDescending(b => b.Amount)
+                    .ThenByDescending(b => b.RegistrationDate)
+                    .FirstOrDefault();
+
+                auction.AuctionWinner = winnerBid?.IdUser;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return expiredAuctions.Select(a => a.Id).ToList();
         }
 
         public async Task AddAsync(Auction auction)

@@ -21,5 +21,7 @@ namespace La_Galeria_del_Diez.Application.DTOs
         public int IdAuction { get; set; }
 
         public string PaymentMethod { get; set; } = string.Empty;
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

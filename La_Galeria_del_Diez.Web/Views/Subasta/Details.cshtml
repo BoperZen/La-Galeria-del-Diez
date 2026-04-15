@@ -1,18 +1,30 @@
 @model La_Galeria_del_Diez.Application.DTOs.AuctionDTO
 
 @{
-ViewData["Title"] = "Detalles de la Subasta";
+ViewData["Title"] = "Auction Details";
 var auctionObject = Model.Object;
-    
+
 var isActive = Model.EndDate > DateTime.Now;
     var timeRemaining = Model.EndDate - DateTime.Now;
     var totalBids = Model.Biddings?.Count ?? 0;
     var currentPrice = Model.Biddings?.Any() == true 
         ? Model.Biddings.Max(b => b.Amount) 
         : Model.BasePrice;
+    var leaderBid = Model.Biddings?
+        .OrderByDescending(b => b.Amount)
+        .ThenByDescending(b => b.RegistrationDate)
+        .FirstOrDefault();
+    var leaderUserName = !string.IsNullOrWhiteSpace(leaderBid?.UserName)
+        ? leaderBid!.UserName
+        : (leaderBid != null ? $"User #{leaderBid.IdUser}" : "No bids yet");
+    var leaderUserId = leaderBid?.IdUser ?? 0;
     var currentUserId = ViewBag.CurrentUserId is int id ? id : 0;
-    var canBid = isActive && currentUserId > 0 && currentUserId != Model.IdUser;
+    var hasCurrentUserBid = Model.Biddings?.Any(b => b.IdUser == currentUserId) == true;
+    var currentUserRoleId = ViewBag.CurrentUserRoleId is int roleId ? roleId : 0;
+    var isSellerUser = currentUserRoleId == 2;
+    var canBid = isActive && currentUserId > 0 && currentUserId != Model.IdUser && !isSellerUser;
     var nextBidAmount = currentPrice + Model.MinIncrement;
+    var endDateIso = Model.EndDate.ToString("O");
 }
 
 <style>
@@ -111,43 +123,56 @@ var isActive = Model.EndDate > DateTime.Now;
             <a asp-controller="Subasta" asp-action="Index" 
                class="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
                 <i class="bi bi-arrow-left mr-2"></i>
-                Volver a Subastas
+                Back to Auctions
             </a>
         </div>
 
-        <!-- Título y Estado -->
+        <!-- Title and Status -->
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h1 class="text-xl font-bold text-foreground">Detalles de la Subasta</h1>
+            <h1 class="text-xl font-bold text-foreground">Auction Details</h1>
             
             @if (isActive)
             {
                 <div class="flex items-center gap-2">
-                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        ACTIVA
+                    <span id="auctionStatusBadge" class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        ACTIVE
                     </span>
                     @if (timeRemaining.TotalHours < 24)
                     {
-                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        <span id="urgentTimeBadge" class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                             <i class="bi bi-exclamation-triangle mr-1"></i>
-                            ¡Quedan @((int)timeRemaining.TotalHours)h @timeRemaining.Minutes m!
+                            @((int)timeRemaining.TotalHours)h @timeRemaining.Minutes m left!
                         </span>
                     }
                 </div>
             }
             else
             {
-                <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    FINALIZADA
+                <span id="auctionStatusBadge" class="bg-gray-400 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    FINISHED
                 </span>
             }
         </div>
 
-        <!-- BLOQUE SUPERIOR: Imagen (izq) + Info (der) -->
+        <div class="bg-card rounded-lg border border-border p-4 mb-4">
+            <div class="text-xs text-muted-foreground">Time remaining</div>
+            <div id="countdownTimer" class="text-lg font-bold text-primary">--</div>
+        </div>
+
+        <div id="outbidAlert" class="hidden bg-red-500/10 border border-red-500/40 text-red-400 rounded-lg p-3 mb-4 font-semibold">
+            Puja ha sido superada
+        </div>
+
+        <div id="auctionClosedAlert" class="@(isActive ? "hidden" : "") bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg p-3 mb-4 font-semibold">
+            Auction closed automatically.
+        </div>
+
+        <!-- Main section: image (left) + info (right) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             
-            <!-- IZQUIERDA: Imagen del objeto (1 de 3 columnas) -->
+            <!-- LEFT: Object image (1 of 3 columns) -->
             <div class="lg:col-span-1">
-                <!-- Imagen principal -->
+                <!-- Main image -->
                 <div class="bg-card rounded-lg border border-border overflow-hidden mb-2">
                     @if (auctionObject.Images.Any())
                     {
@@ -165,207 +190,210 @@ var isActive = Model.EndDate > DateTime.Now;
                     }
                 </div>
 
-                <!-- Botón Ver Detalle del Objeto -->
+                <!-- View Object Details button -->
                 <a asp-controller="Object" asp-action="Details" asp-route-id="@auctionObject.Id"
                    class="w-full inline-flex items-center justify-center px-4 py-3 bg-card text-foreground border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all font-semibold">
                     <i class="bi bi-box-seam mr-2"></i>
-                    Ver Detalle del Objeto
+                    View Object Details
                 </a>
 
-                <details class="w-full mt-3 bid-card border border-border bg-card">
-                    <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
-                        <span class="flex items-center">
-                            <i class="bi bi-cash-coin mr-2 text-primary"></i>
-                            Pujar por este objeto
-                        </span>
-                        <i class="bi bi-chevron-down text-xs transition-transform"></i>
-                    </summary>
-                    <div class="px-4 pb-4 pt-2 space-y-4">
-                        <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
-                            <div class="bid-meta text-muted-foreground">
-                                Última puja registrada
-                            </div>
-                            <div class="bid-controls">
-                                <button type="button"
-                                        class="bid-control border border-border text-foreground"
-                                        data-bid-action="decrease"
-                                        @(canBid ? "" : "disabled")>
-                                    <i class="bi bi-dash"></i>
-                                </button>
-                                <input type="text"
-                                       id="bidAmountInput"
-                                       value="@nextBidAmount.ToString("N0")"
-                                       data-step="@Model.MinIncrement"
-                                       data-min="@nextBidAmount"
-                                       class="bid-amount text-center px-4 py-2 bg-muted border border-border text-foreground"
-                                       readonly>
-                                <button type="button"
-                                        class="bid-control border border-border text-foreground"
-                                        data-bid-action="increase"
-                                        @(canBid ? "" : "disabled")>
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                            <div class="flex justify-between">
-                                <div>
-                                    <div class="bid-meta text-muted-foreground">Precio actual</div>
-                                    <div class="font-semibold text-foreground">$@currentPrice.ToString("N0")</div>
-                                </div>
-                                <div>
-                                    <div class="bid-meta text-muted-foreground">Incremento mínimo</div>
-                                    <div class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</div>
-                                </div>
-                            </div>
-                            @if (!isActive)
-                            {
-                                <div class="bid-meta text-red-400">La subasta no está activa.</div>
-                            }
-                            @if (currentUserId == Model.IdUser)
-                            {
-                                <div class="bid-meta text-red-400">El vendedor no puede pujar en su propia subasta.</div>
-                            }
-                        </div>
+                @if (isActive)
+                {
+                    <details class="w-full mt-3 bid-card border border-border bg-card">
+                        <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
+                            <span class="flex items-center">
+                                <i class="bi bi-cash-coin mr-2 text-primary"></i>
+                                Place a bid
+                            </span>
+                            <i class="bi bi-chevron-down text-xs transition-transform"></i>
+                        </summary>
+                        <form id="bidForm" asp-controller="Subasta" asp-action="Bid" asp-route-id="@Model.Id" method="post" class="px-4 pb-4 pt-2 space-y-4">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="bidAmountRaw" name="amount" value="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
 
-                        <div class="flex justify-end">
-                            <button type="button"
-                                    class="bid-submit bg-primary text-primary-foreground hover:bg-secondary shadow-lg @(canBid ? "" : "")"
-                                    @(canBid ? "" : "disabled")>
-                                <i class="bi bi-arrow-right-circle"></i>
-                                Pujar
-                            </button>
-                        </div>
-                    </div>
-                </details>
+                            <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
+                                <div class="bid-meta text-muted-foreground">
+                                    Last registered bid
+                                </div>
+                                <div class="bid-controls">
+                                    <button type="button"
+                                            class="bid-control border border-border text-foreground"
+                                            data-bid-action="decrease"
+                                            @(canBid ? "" : "disabled")>
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="text"
+                                           id="bidAmountInput"
+                                           value="@nextBidAmount.ToString("N0")"
+                                           data-step="1"
+                                           data-min="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                           data-current="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                           class="bid-amount text-center px-4 py-2 bg-muted border border-border text-foreground"
+                                           readonly>
+                                    <button type="button"
+                                            class="bid-control border border-border text-foreground"
+                                            data-bid-action="increase"
+                                            @(canBid ? "" : "disabled")>
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="flex justify-between">
+                                    <div>
+                                        <div class="bid-meta text-muted-foreground">Current price</div>
+                                        <div id="currentBidPriceTop" class="font-semibold text-foreground">$@currentPrice.ToString("N0")</div>
+                                    </div>
+                                    <div>
+                                        <div class="bid-meta text-muted-foreground">Minimum increment</div>
+                                        <div class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</div>
+                                    </div>
+                                </div>
+                                @if (currentUserId == Model.IdUser)
+                                {
+                                    <div class="bid-meta text-red-400">The seller cannot bid on their own auction.</div>
+                                }
+                                @if (isSellerUser)
+                                {
+                                    <div class="bid-meta text-red-400">Users with seller role cannot place bids.</div>
+                                }
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                        id="bidSubmitButton"
+                                        class="bid-submit bg-primary text-primary-foreground hover:bg-secondary shadow-lg @(canBid ? "" : "")"
+                                        @(canBid ? "" : "disabled")>
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                    Bid
+                                </button>
+                            </div>
+                        </form>
+                    </details>
+                }
             </div>
 
-            <!-- DERECHA: Información de la Subasta (2 de 3 columnas) -->
+            <!-- RIGHT: Auction Information (2 of 3 columns) -->
             <div class="lg:col-span-2 flex flex-col gap-4 h-full">
-                <!-- Bloque de datos de la subasta -->
+                <!-- Auction data block -->
                 <div class="bg-card rounded-lg border border-border p-4">
                     <h2 class="text-sm font-bold text-foreground mb-3 flex items-center">
                         <i class="bi bi-gavel mr-2 text-primary text-xs"></i>
-                        Datos de la Subasta
+                        Auction Data
                     </h2>
                     
-                    <!-- Fecha Inicio -->
+                    <!-- Start Date -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-calendar-check text-muted-foreground text-xs"></i>
                         </div>
-
-<script>
-    document.querySelectorAll('[data-bid-action]')?.forEach((button) => {
-        button.addEventListener('click', () => {
-            const input = document.getElementById('bidAmountInput');
-            if (!input) {
-                return;
-            }
-
-            const step = Number(input.dataset.step || '0');
-            const min = Number(input.dataset.min || '0');
-            const raw = input.value.replace(/,/g, '');
-            const current = Number(raw || '0');
-            const action = button.getAttribute('data-bid-action');
-            let next = current;
-
-            if (action === 'increase') {
-                next = current + step;
-            }
-
-            if (action === 'decrease') {
-                next = Math.max(min, current - step);
-            }
-
-            input.value = next.toLocaleString('en-US');
-        });
-    });
-</script>
                         <div>
-                            <div class="text-xs text-muted-foreground">Fecha de Inicio</div>
+                            <div class="text-xs text-muted-foreground">Start date</div>
                             <div class="font-semibold text-foreground text-sm">
                                 @Model.StartDate.ToString("dd/MM/yyyy") - @Model.StartDate.ToString("HH:mm")
                             </div>
                         </div>
                     </div>
 
-                    <!-- Fecha Cierre -->
+                    <!-- End Date -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-calendar-x text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Fecha de Cierre</div>
+                            <div class="text-xs text-muted-foreground">End date</div>
                             <div class="font-semibold text-foreground text-sm">
                                 @Model.EndDate.ToString("dd/MM/yyyy") - @Model.EndDate.ToString("HH:mm")
                             </div>
                         </div>
                     </div>
 
-                    <!-- Precio Base -->
+                    <!-- Base Price -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-tag text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Precio Base</div>
+                            <div class="text-xs text-muted-foreground">Base price</div>
                             <div class="font-bold text-foreground text-base">$@Model.BasePrice.ToString("N0")</div>
                         </div>
                     </div>
 
-                    <!-- Incremento Mínimo -->
+                    <!-- Minimum Increment -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-arrow-up-circle text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Incremento Mínimo</div>
+                            <div class="text-xs text-muted-foreground">Minimum increment</div>
                             <div class="font-bold text-foreground text-base">$@Model.MinIncrement.ToString("N0")</div>
                         </div>
                     </div>
 
-                    <!-- Estado Actual -->
+                    <!-- Current State -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-info-circle text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Estado</div>
+                            <div class="text-xs text-muted-foreground">State</div>
                             <div class="font-semibold text-foreground text-sm">@Model.State.Description</div>
                         </div>
                     </div>
 
-                    <!-- Cantidad de Pujas -->
+                    <!-- Seller -->
+                    <div class="flex items-center gap-3 py-2 border-b border-border">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-person-badge text-muted-foreground text-xs"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-muted-foreground">Seller</div>
+                            <div class="font-semibold text-foreground text-sm">@Model.IdUserNavegation.Username</div>
+                            <div class="text-xs text-muted-foreground">@Model.IdUserNavegation.Email</div>
+                        </div>
+                    </div>
+
+                    <!-- Number of Bids -->
                     <div class="flex items-center gap-3 py-2 border-b border-border">
                         <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-hand-index text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Total de Pujas</div>
-                            <div class="font-bold text-foreground text-base">@totalBids</div>
+                            <div class="text-xs text-muted-foreground">Total bids</div>
+                            <div id="totalBidsValue" class="font-bold text-foreground text-base">@totalBids</div>
                         </div>
                     </div>
 
-                    <!-- Precio Actual -->
+                    <!-- Leading Bidder -->
+                    <div class="flex items-center gap-3 py-2 border-b border-border">
+                        <div class="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <i class="bi bi-trophy text-muted-foreground text-xs"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-muted-foreground">Leading user</div>
+                            <div id="leaderUserValue" class="font-semibold text-foreground text-sm">@leaderUserName</div>
+                        </div>
+                    </div>
+
+                    <!-- Current Price -->
                     <div class="flex items-center gap-3 py-2">
                         <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-currency-dollar text-muted-foreground text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-muted-foreground">Precio Actual</div>
-                            <div class="font-bold text-primary text-xl">$@currentPrice.ToString("N0")</div>
+                            <div class="text-xs text-muted-foreground">Current price</div>
+                            <div id="currentPriceMain" class="font-bold text-primary text-xl">$@currentPrice.ToString("N0")</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Historial de Pujas -->
+                <!-- Bids History -->
                 <div class="bg-card rounded-lg border border-border overflow-hidden">
                     <div class="bg-muted/30 px-4 py-2.5 border-b border-border">
                         <h2 class="text-sm font-bold text-foreground flex items-center justify-between">
                             <span class="flex items-center">
                                 <i class="bi bi-list-ol mr-2 text-primary text-xs"></i>
-                                Historial de Pujas
+                                Bids history
                             </span>
-                            <span class="bg-primary text-primary-foreground px-2 py-0.5 rounded-full text-xs">
+                            <span id="totalBidsBadge" class="bg-primary text-primary-foreground px-2 py-0.5 rounded-full text-xs">
                                 @totalBids
                             </span>
                         </h2>
@@ -373,29 +401,28 @@ var isActive = Model.EndDate > DateTime.Now;
 
                     @if (Model.Biddings != null && Model.Biddings.Any())
                     {
-                        <div class="divide-y divide-border max-h-80 overflow-y-auto">
+                        <div id="bidHistoryContainer" class="divide-y divide-border max-h-80 overflow-y-auto">
                             @foreach (var bidding in Model.Biddings.OrderByDescending(b => b.RegistrationDate))
                             {
                                 var isHighestBid = bidding.Amount == currentPrice;
                                 
                                 <div class="p-3 hover:bg-muted/10 transition-colors @(isHighestBid ? "bg-primary/5" : "")">
                                     <div class="flex items-center justify-between gap-3">
-                                        <!-- Usuario -->
+                                        <!-- User -->
                                         <div class="flex items-center gap-2 flex-1">
                                             <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                                                 <i class="bi bi-person-fill text-primary text-xs"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <div class="font-semibold text-foreground text-sm truncate">Usuario #@bidding.IdUser</div>
-                                                <div class="text-xs text-muted-foreground">@bidding.PaymentMethod</div>
+                                                <div class="font-semibold text-foreground text-sm truncate">@(string.IsNullOrWhiteSpace(bidding.UserName) ? $"User #{bidding.IdUser}" : bidding.UserName)</div>
                                             </div>
                                         </div>
 
-                                        <!-- Monto -->
+                                        <!-- Amount -->
                                         @if (isHighestBid)
                                         {
                                             <div class="text-xs bg-primary text-primary-foreground p-1 rounded-full font-semibold">
-                                                Más alta
+                                                Highest
                                             </div>
                                         }
                                         <div class="text-right">
@@ -404,7 +431,7 @@ var isActive = Model.EndDate > DateTime.Now;
                                             </div>
                                         </div>
 
-                                        <!-- Fecha y Hora -->
+                                        <!-- Date and Time -->
                                         <div class="text-right">
                                             <div class="font-semibold text-foreground text-xs">@bidding.RegistrationDate.ToString("dd/MM/yyyy")</div>
                                             <div class="text-xs text-muted-foreground">@bidding.RegistrationDate.ToString("HH:mm:ss")</div>
@@ -416,9 +443,9 @@ var isActive = Model.EndDate > DateTime.Now;
                     }
                     else
                     {
-                        <div class="p-8 text-center">
+                        <div id="bidHistoryContainer" class="p-8 text-center">
                             <i class="bi bi-inbox text-4xl text-muted-foreground mb-3 block"></i>
-                            <p class="text-muted-foreground">No hay pujas registradas aún</p>
+                            <p class="text-muted-foreground">No bids registered yet</p>
                         </div>
                     }
                 </div>
@@ -426,3 +453,292 @@ var isActive = Model.EndDate > DateTime.Now;
         </div>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+    const auctionId = '@Model.Id';
+    const currentUserId = Number('@currentUserId');
+    let currentLeaderUserId = Number('@leaderUserId');
+    let userHasBid = @hasCurrentUserBid.ToString().ToLower();
+
+    const outbidAlert = document.getElementById('outbidAlert');
+    const toggleOutbidAlert = (show) => {
+        if (!outbidAlert) {
+            return;
+        }
+
+        if (show) {
+            outbidAlert.classList.remove('hidden');
+        } else {
+            outbidAlert.classList.add('hidden');
+        }
+    };
+
+    toggleOutbidAlert(userHasBid && currentLeaderUserId !== 0 && currentLeaderUserId !== currentUserId);
+
+    document.querySelectorAll('[data-bid-action]')?.forEach((button) => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById('bidAmountInput');
+            if (!input) {
+                return;
+            }
+
+            const parseValue = (value) => {
+                const normalized = (value ?? '').toString().replace(',', '.');
+                const result = Number(normalized);
+                return Number.isFinite(result) ? result : 0;
+            };
+
+            const formatValue = (value) => new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: 0
+            }).format(value);
+
+            const step = parseValue(input.dataset.step || '0');
+            const min = parseValue(input.dataset.min || '0');
+            const current = parseValue(input.dataset.current || input.dataset.min || '0');
+
+            if (step <= 0) {
+                return;
+            }
+
+            const action = button.getAttribute('data-bid-action');
+            let next = current;
+
+            if (action === 'increase') {
+                next = current + step;
+            }
+
+            if (action === 'decrease') {
+                next = Math.max(min, current - step);
+            }
+
+            input.dataset.current = next.toString();
+            input.value = formatValue(next);
+
+            const rawInput = document.getElementById('bidAmountRaw');
+            if (rawInput) {
+                rawInput.value = next.toString();
+            }
+        });
+    });
+
+    const bidForm = document.getElementById('bidForm');
+    bidForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(bidForm);
+
+        const response = await fetch(bidForm.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            return;
+        }
+
+        const errorResult = await response.json();
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bid rejected',
+                text: errorResult?.message || 'Could not place your bid.'
+            });
+        }
+    });
+
+    const formatCurrency = (amount) => `$${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount)}`;
+
+    const renderHistory = (history) => {
+        const container = document.getElementById('bidHistoryContainer');
+        if (!container) {
+            return;
+        }
+
+        if (!history || history.length === 0) {
+            container.className = 'p-8 text-center';
+            container.innerHTML = `
+                <i class="bi bi-inbox text-4xl text-muted-foreground mb-3 block"></i>
+                <p class="text-muted-foreground">No bids registered yet</p>
+            `;
+            return;
+        }
+
+        const highestAmount = Math.max(...history.map(b => b.amount));
+        container.className = 'divide-y divide-border max-h-80 overflow-y-auto';
+        container.innerHTML = history.map(b => {
+            const userName = b.userName && b.userName.trim() ? b.userName : `User #${b.idUser}`;
+            const isHighest = b.amount === highestAmount;
+            return `
+                <div class="p-3 hover:bg-muted/10 transition-colors ${isHighest ? 'bg-primary/5' : ''}">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 flex-1">
+                            <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <i class="bi bi-person-fill text-primary text-xs"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-semibold text-foreground text-sm truncate">${userName}</div>
+                            </div>
+                        </div>
+                        ${isHighest ? '<div class="text-xs bg-primary text-primary-foreground p-1 rounded-full font-semibold">Highest</div>' : ''}
+                        <div class="text-right">
+                            <div class="font-bold text-primary text-base">${formatCurrency(b.amount)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-foreground text-xs">${b.registrationDate}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl('/hubs/auction')
+        .withAutomaticReconnect()
+        .build();
+
+    const applyBidPayload = (payload) => {
+        const currentPriceText = formatCurrency(payload.currentPrice);
+        const currentPriceMain = document.getElementById('currentPriceMain');
+        const currentBidPriceTop = document.getElementById('currentBidPriceTop');
+        const totalBidsValue = document.getElementById('totalBidsValue');
+        const totalBidsBadge = document.getElementById('totalBidsBadge');
+        const leaderUserValue = document.getElementById('leaderUserValue');
+        const bidAmountInput = document.getElementById('bidAmountInput');
+        const bidAmountRaw = document.getElementById('bidAmountRaw');
+
+        if (currentPriceMain) currentPriceMain.textContent = currentPriceText;
+        if (currentBidPriceTop) currentBidPriceTop.textContent = currentPriceText;
+        if (totalBidsValue) totalBidsValue.textContent = payload.totalBids;
+        if (totalBidsBadge) totalBidsBadge.textContent = payload.totalBids;
+        if (leaderUserValue) leaderUserValue.textContent = payload.leaderUser || 'No bids yet';
+
+        const minBid = Number(payload.currentPrice) + Number('@Model.MinIncrement'.replace(',', '.'));
+        if (bidAmountInput && bidAmountRaw) {
+            const currentSelected = Number(bidAmountRaw.value || '0');
+            if (currentSelected < minBid) {
+                bidAmountRaw.value = minBid.toString();
+                bidAmountInput.dataset.current = minBid.toString();
+                bidAmountInput.dataset.min = minBid.toString();
+                bidAmountInput.value = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(minBid);
+            } else {
+                bidAmountInput.dataset.min = minBid.toString();
+            }
+        }
+
+        renderHistory(payload.history);
+    };
+
+    const disableBiddingUi = () => {
+        document.querySelectorAll('[data-bid-action]').forEach(button => {
+            button.disabled = true;
+        });
+
+        const submitButton = document.getElementById('bidSubmitButton');
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+    };
+
+    connection.on('BidUpdated', (payload) => {
+        if (!payload || Number(payload.auctionId) !== Number(auctionId)) {
+            return;
+        }
+
+        const previousLeaderUserId = currentLeaderUserId;
+        const leaderUserId = Number(payload.leaderUserId || 0);
+        const history = payload.history || [];
+
+        userHasBid = history.some(b => Number(b.idUser) === currentUserId);
+        const userIsLeaderNow = leaderUserId !== 0 && leaderUserId === currentUserId;
+        const userJustLostLeadership = previousLeaderUserId === currentUserId && !userIsLeaderNow;
+
+        toggleOutbidAlert(userHasBid && !userIsLeaderNow);
+
+        if (userJustLostLeadership && window.Swal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Puja ha sido superada',
+                text: 'Otro usuario ahora tiene la puja más alta.'
+            });
+        }
+
+        currentLeaderUserId = leaderUserId;
+
+        const currentPriceText = formatCurrency(payload.currentPrice);
+        const currentPriceMain = document.getElementById('currentPriceMain');
+        const currentBidPriceTop = document.getElementById('currentBidPriceTop');
+        const totalBidsValue = document.getElementById('totalBidsValue');
+        const totalBidsBadge = document.getElementById('totalBidsBadge');
+        const leaderUserValue = document.getElementById('leaderUserValue');
+        const bidAmountInput = document.getElementById('bidAmountInput');
+        const bidAmountRaw = document.getElementById('bidAmountRaw');
+
+        if (currentPriceMain) currentPriceMain.textContent = currentPriceText;
+        if (currentBidPriceTop) currentBidPriceTop.textContent = currentPriceText;
+        if (totalBidsValue) totalBidsValue.textContent = payload.totalBids;
+        if (totalBidsBadge) totalBidsBadge.textContent = payload.totalBids;
+        if (leaderUserValue) leaderUserValue.textContent = payload.leaderUser || 'No bids yet';
+
+        const minBid = Number(payload.currentPrice) + Number('@Model.MinIncrement'.replace(',', '.'));
+        if (bidAmountInput && bidAmountRaw) {
+            const currentSelected = Number(bidAmountRaw.value || '0');
+            if (currentSelected < minBid) {
+                bidAmountRaw.value = minBid.toString();
+                bidAmountInput.dataset.current = minBid.toString();
+                bidAmountInput.dataset.min = minBid.toString();
+                bidAmountInput.value = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(minBid);
+            } else {
+                bidAmountInput.dataset.min = minBid.toString();
+            }
+        }
+
+        renderHistory(history);
+    });
+
+    connection.start()
+        .then(() => connection.invoke('JoinAuctionGroup', String(auctionId)))
+        .catch(() => {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Realtime connection failed',
+                    text: 'Live bid updates are currently unavailable.'
+                });
+            }
+        });
+
+    (function () {
+        const countdownElement = document.getElementById('countdownTimer');
+        if (!countdownElement) {
+            return;
+        }
+
+        const endDate = new Date('@endDateIso');
+
+        const render = () => {
+            const now = new Date();
+            const diff = endDate - now;
+
+            if (diff <= 0) {
+                countdownElement.textContent = 'Auction ended';
+                return;
+            }
+
+            const totalSeconds = Math.floor(diff / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        render();
+        setInterval(render, 1000);
+    })();
+</script>

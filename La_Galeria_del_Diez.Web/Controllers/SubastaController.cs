@@ -1,9 +1,12 @@
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
+using La_Galeria_del_Diez.Web.Hubs;
 using Libreria.Web.Util;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
+using System.Globalization;
 using X.PagedList.Extensions;
 
 namespace La_Galeria_del_Diez.Web.Controllers
@@ -11,15 +14,19 @@ namespace La_Galeria_del_Diez.Web.Controllers
     public class SubastaController : Controller
     {
         private readonly IServiceAuction _serviceAuction;
+        private readonly IServiceBidding _serviceBidding;
         private readonly IServiceObject _serviceObject;
         private readonly IServiceUser _serviceUser;
-        private int IdUser = 1;
+        private readonly IHubContext<AuctionHub> _auctionHub;
+        private int IdUser = 7;
 
-        public SubastaController(IServiceAuction serviceAuction, IServiceObject serviceObject, IServiceUser serviceUser)
+        public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub)
         {
             _serviceAuction = serviceAuction;
+            _serviceBidding = serviceBidding;
             _serviceObject = serviceObject;
             _serviceUser = serviceUser;
+            _auctionHub = auctionHub;
         }
 
         [HttpGet]
@@ -67,6 +74,8 @@ namespace La_Galeria_del_Diez.Web.Controllers
             }
 
             ViewBag.CurrentUserId = IdUser;
+            var currentUser = await _serviceUser.FindByIdAsync(IdUser);
+            ViewBag.CurrentUserRoleId = currentUser?.IdRol ?? 0;
 
             return View(auction);
         }
@@ -336,6 +345,106 @@ namespace La_Galeria_del_Diez.Web.Controllers
             });
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Bid(int id, string amount)
+        {
+            if (!decimal.TryParse(amount, NumberStyles.Number, CultureInfo.InvariantCulture, out var bidAmount))
+            {
+                var invalidAmountMessage = "The bid amount is not valid.";
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return BadRequest(new { message = invalidAmountMessage });
+                }
+
+                TempData["SwalError"] = JsonSerializer.Serialize(new
+                {
+                    title = "Invalid bid",
+                    text = invalidAmountMessage,
+                    icon = "warning"
+                });
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var dto = new BiddingDTO
+            {
+                IdAuction = id,
+                IdUser = IdUser,
+                Amount = bidAmount,
+                PaymentMethod = "Null"
+            };
+
+            try
+            {
+                await _serviceBidding.AddAsync(dto);
+
+                var auction = await _serviceAuction.FindByIdAsync(id);
+                if (auction != null)
+                {
+                    var currentPrice = auction.Biddings?.Any() == true
+                        ? auction.Biddings.Max(b => b.Amount)
+                        : auction.BasePrice;
+
+                    var leadingBid = auction.Biddings?
+                        .OrderByDescending(b => b.Amount)
+                        .ThenByDescending(b => b.RegistrationDate)
+                        .FirstOrDefault();
+
+                    var bidHistory = auction.Biddings?
+                        .OrderByDescending(b => b.RegistrationDate)
+                        .Select(b => new
+                        {
+                            idUser = b.IdUser,
+                            userName = b.UserName,
+                            amount = b.Amount,
+                            registrationDate = b.RegistrationDate.ToString("dd/MM/yyyy HH:mm:ss")
+                        })
+                        .Cast<object>()
+                        .ToList();
+
+                    await _auctionHub.Clients.Group($"auction-{id}").SendAsync("BidUpdated", new
+                    {
+                        auctionId = id,
+                        totalBids = auction.Biddings?.Count ?? 0,
+                        currentPrice,
+                        leaderUserId = leadingBid?.IdUser ?? 0,
+                        leaderUser = !string.IsNullOrWhiteSpace(leadingBid?.UserName)
+                            ? leadingBid!.UserName
+                            : (leadingBid != null ? $"User #{leadingBid.IdUser}" : "No bids yet"),
+                        history = bidHistory ?? new List<object>()
+                    });
+                }
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Ok(new { success = true });
+                }
+
+                TempData["SwalSuccess"] = JsonSerializer.Serialize(new
+                {
+                    title = "Bid placed",
+                    text = "Your bid was registered successfully.",
+                    icon = "success"
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
+
+                TempData["SwalError"] = JsonSerializer.Serialize(new
+                {
+                    title = "Bid rejected",
+                    text = ex.Message,
+                    icon = "warning"
+                });
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [HttpPost]

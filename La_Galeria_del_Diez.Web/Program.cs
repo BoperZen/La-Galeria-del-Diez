@@ -4,6 +4,8 @@ using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Infraestructure.Data;
 using La_Galeria_del_Diez.Infraestructure.Repository.Implementations;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
+using La_Galeria_del_Diez.Web.Hubs;
+using La_Galeria_del_Diez.Web.Services;
 using Libreria.Web.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -74,6 +76,8 @@ builder.Host.UseSerilog(Log.Logger);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+builder.Services.AddHostedService<AuctionClosingBackgroundService>();
 
 //*********** 
 // ======================= 
@@ -160,6 +164,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.MapHub<AuctionHub>("/hubs/auction");
 
 
 app.Run();
