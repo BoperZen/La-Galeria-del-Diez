@@ -82,12 +82,12 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             }
         }
 
-        public async Task<IEnumerable<BidHistoryReportDto>> GetBidHistoryAsync()
+        public async Task<IEnumerable<BidHistoryReportDto>> GetBidHistoryAsync(DateTime? startDate = null, DateTime? endDateExclusive = null)
         {
             _logger.LogInformation("Starting GetBidHistoryAsync");
             try
             {
-                var bids = await _reportRepository.GetBidHistoryAsync();
+                var bids = await _reportRepository.GetBidHistoryAsync(startDate, endDateExclusive);
                 var maxBidByAuctionId = bids
                     .GroupBy(b => b.IdAuction)
                     .ToDictionary(g => g.Key, g => g.Max(x => x.Amount));

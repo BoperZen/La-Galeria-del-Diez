@@ -1,0 +1,87 @@
+@model Libreria.Web.ViewModels.ViewModelLogin
+
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<div class="min-h-screen bg-background py-10">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-card border border-border rounded-xl shadow-lg p-6 space-y-5">
+                <div>
+                    <h1 class="text-2xl font-bold text-foreground">Sign in</h1>
+                    <p class="text-sm text-muted-foreground">Sign in with your email and password.</p>
+                </div>
+
+                <form asp-action="LogIn" asp-controller="Login" method="post" class="space-y-4">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-sm text-red-400"></div>
+
+                    <div class="space-y-2">
+                        <label asp-for="User" class="text-sm font-semibold text-foreground"></label>
+                        <input asp-for="User" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="username" />
+                        <span asp-validation-for="User" class="text-sm text-red-400"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Password" class="text-sm font-semibold text-foreground"></label>
+                        <input asp-for="Password" type="password" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-sm text-red-400"></span>
+                    </div>
+
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-secondary transition-colors">
+                        Sign in
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-card border border-border rounded-xl shadow-lg p-6 space-y-5">
+                <div>
+                    <h2 class="text-2xl font-bold text-foreground">Create account</h2>
+                    <p class="text-sm text-muted-foreground">Register a new user as a buyer or seller.</p>
+                </div>
+
+                <form asp-action="Register" asp-controller="Login" method="post" class="space-y-4">
+                    @Html.AntiForgeryToken()
+
+                    <div class="space-y-2">
+                        <label for="RegisterUsername" class="text-sm font-semibold text-foreground">Username</label>
+                        <input id="RegisterUsername" name="Username" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="name" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="RegisterEmail" class="text-sm font-semibold text-foreground">Email</label>
+                        <input id="RegisterEmail" name="Email" type="email" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="email" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="RegisterPassword" class="text-sm font-semibold text-foreground">Password</label>
+                        <input id="RegisterPassword" name="Password" type="password" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="new-password" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="RegisterConfirmPassword" class="text-sm font-semibold text-foreground">Confirm password</label>
+                        <input id="RegisterConfirmPassword" name="ConfirmPassword" type="password" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" autocomplete="new-password" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="RegisterIdRol" class="text-sm font-semibold text-foreground">Account type</label>
+                        <select id="RegisterIdRol" name="IdRol" class="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground">
+                            <option value="3">Buyer</option>
+                            <option value="2">Seller</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-secondary text-primary-foreground font-semibold hover:bg-primary transition-colors">
+                        Create user
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

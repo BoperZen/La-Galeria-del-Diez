@@ -1,23 +1,23 @@
 using La_Galeria_del_Diez.Application.Interfaces;
 using La_Galeria_del_Diez.Web.Models;
-using La_Galeria_del_Diez.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Diagnostics;
 
 namespace La_Galeria_del_Diez.Web.Controllers.Admin
 {
     [Route("Admin/Reports")]
+    [Authorize]
     public class ReportsController : Controller
     {
         private const int AdminUserId = 1;
 
         private readonly IReportService _reportService;
-        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public ReportsController(IReportService reportService, ICurrentUserProvider currentUserProvider)
+        public ReportsController(IReportService reportService)
         {
             _reportService = reportService;
-            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet("")]
@@ -76,7 +76,7 @@ namespace La_Galeria_del_Diez.Web.Controllers.Admin
         }
 
         [HttpGet("BidHistory")]
-        public async Task<IActionResult> BidHistory()
+        public async Task<IActionResult> BidHistory(DateTime? startDate, DateTime? endDate)
         {
             if (!IsAdminUser())
             {
@@ -85,7 +85,8 @@ namespace La_Galeria_del_Diez.Web.Controllers.Admin
 
             try
             {
-                var result = await _reportService.GetBidHistoryAsync();
+                var endDateExclusive = endDate?.Date.AddDays(1);
+                var result = await _reportService.GetBidHistoryAsync(startDate?.Date, endDateExclusive);
                 return View("~/Views/Admin/Reports/BidHistory.cshtml", result);
             }
             catch
@@ -119,6 +120,10 @@ namespace La_Galeria_del_Diez.Web.Controllers.Admin
             }
         }
 
-        private bool IsAdminUser() => _currentUserProvider.CurrentUserId == AdminUserId;
+        private bool IsAdminUser()
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(idClaim, out var currentUserId) && currentUserId == AdminUserId;
+        }
     }
 }

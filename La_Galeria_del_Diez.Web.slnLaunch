@@ -6,6 +6,11 @@
         "Path": "La_Galeria_del_Diez.Web\\La_Galeria_del_Diez.Web.csproj",
         "Action": "Start",
         "DebugTarget": "https"
+      },
+      {
+        "Path": "La_Galeria_del_Diez.Api\\La_Galeria_del_Diez.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "La_Galeria_del_Diez.Api"
       }
     ]
   }

@@ -1,30 +1,36 @@
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Web.Models;
-using La_Galeria_del_Diez.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace La_Galeria_del_Diez.Web.Controllers
 {
+    [Authorize]
     public class PujasController : Controller
     {
         private readonly IServiceAuction _serviceAuction;
         private readonly IServiceBidding _serviceBidding;
         private readonly IServiceUser _serviceUser;
-        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public PujasController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceUser serviceUser, ICurrentUserProvider currentUserProvider)
+        public PujasController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceUser serviceUser)
         {
             _serviceAuction = serviceAuction;
             _serviceBidding = serviceBidding;
             _serviceUser = serviceUser;
-            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(int? id, int? auctionId)
         {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId <= 0)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             var targetId = auctionId ?? id ?? 0;
             if (targetId <= 0)
             {
@@ -56,6 +62,12 @@ namespace La_Galeria_del_Diez.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BiddingCreateViewModel model)
         {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId <= 0)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             if (model.AuctionId <= 0)
             {
                 return RedirectToAction("Index", "Subasta");
@@ -85,38 +97,15 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 ModelState.AddModelError(nameof(model.PaymentMethod), "Debe indicar el método de pago.");
             }
 
-            var user = await _serviceUser.FindByIdAsync(_currentUserProvider.CurrentUserId);
+            var user = await _serviceUser.FindByIdAsync(currentUserId);
             if (user == null)
             {
-                if (string.IsNullOrWhiteSpace(model.BuyerName))
-                {
-                    ModelState.AddModelError(nameof(model.BuyerName), "Debe ingresar el nombre del comprador.");
-                }
-
-                if (string.IsNullOrWhiteSpace(model.BuyerEmail))
-                {
-                    ModelState.AddModelError(nameof(model.BuyerEmail), "Debe ingresar el correo del comprador.");
-                }
+                return RedirectToAction("Index", "Login");
             }
 
             if (!ModelState.IsValid)
             {
                 return View("Index", model);
-            }
-
-            if (user == null)
-            {
-                var newUser = new UserDTO
-                {
-                    Username = model.BuyerName.Trim(),
-                    Email = model.BuyerEmail.Trim(),
-                    Password = "Temporal123",
-                    IdRol = 3,
-                    UserState = true
-                };
-
-                user = await _serviceUser.AddAsync(newUser);
-                _currentUserProvider.CurrentUserId = user.Id;
             }
 
             var biddingDto = new BiddingDTO
@@ -145,6 +134,12 @@ namespace La_Galeria_del_Diez.Web.Controllers
             });
 
             return RedirectToAction("Details", "Subasta", new { id = model.AuctionId });
+        }
+
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(idClaim, out var currentUserId) ? currentUserId : 0;
         }
     }
 }

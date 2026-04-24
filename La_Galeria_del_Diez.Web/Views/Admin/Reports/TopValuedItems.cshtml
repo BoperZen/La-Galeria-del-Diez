@@ -1,20 +1,20 @@
 @model IEnumerable<La_Galeria_del_Diez.Application.DTOs.Reports.TopValuedItemDto>
 @{
-    ViewData["Title"] = "Objetos más valorados";
+    ViewData["Title"] = "Most valued items";
     var total = Model.Count();
 }
 
 <div class="min-h-screen bg-background py-8">
     <div class="container mx-auto px-4">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-foreground">Objetos más valorados</h1>
-            <p class="text-muted-foreground">Ranking de camisetas por precio máximo alcanzado.</p>
-            <span class="text-sm text-muted-foreground">Total registros: @total</span>
+            <h1 class="text-3xl font-bold text-foreground">Most valued items</h1>
+            <p class="text-muted-foreground">Ranking of items by highest achieved price.</p>
+            <span class="text-sm text-muted-foreground">Total records: @total</span>
             <div class="mt-3">
                 <a href="/Admin/Reports"
                    class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
                     <i class="bi bi-arrow-left mr-2"></i>
-                    Volver a reportes
+                    Back to reports
                 </a>
             </div>
         </div>
@@ -24,13 +24,13 @@
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50 text-muted-foreground">
                         <tr class="text-left">
-                            <th class="px-4 py-3">Posición</th>
-                            <th class="px-4 py-3">Camiseta</th>
-                            <th class="px-4 py-3">Descripción</th>
-                            <th class="px-4 py-3">Precio base</th>
-                            <th class="px-4 py-3">Precio máximo</th>
-                            <th class="px-4 py-3">Veces subastado</th>
-                            <th class="px-4 py-3">Estado actual</th>
+                            <th class="px-4 py-3">Rank</th>
+                            <th class="px-4 py-3">Item</th>
+                            <th class="px-4 py-3">Description</th>
+                            <th class="px-4 py-3">Base price</th>
+                            <th class="px-4 py-3">Max price</th>
+                            <th class="px-4 py-3">Times auctioned</th>
+                            <th class="px-4 py-3">Current status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
@@ -44,7 +44,7 @@
                                 <td class="px-4 py-3 text-foreground">$@item.MaxPrice.ToString("N0")</td>
                                 <td class="px-4 py-3 text-foreground">@item.AuctionCount</td>
                                 <td class="px-4 py-3">
-                                    <span class="px-2 py-1 rounded-full text-xs font-semibold @(item.CurrentStatus == "En subasta" ? "bg-green-500/20 text-green-400" : "bg-muted text-foreground")">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold @(item.CurrentStatus == "In auction" ? "bg-green-500/20 text-green-400" : "bg-muted text-foreground")">
                                         @item.CurrentStatus
                                     </span>
                                 </td>

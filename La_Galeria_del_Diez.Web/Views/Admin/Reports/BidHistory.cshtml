@@ -1,20 +1,52 @@
 @model IEnumerable<La_Galeria_del_Diez.Application.DTOs.Reports.BidHistoryReportDto>
 @{
-    ViewData["Title"] = "Historial de pujas";
+    ViewData["Title"] = "Bid history";
     var total = Model.Count();
+    var startDate = Context.Request.Query["startDate"].ToString();
+    var endDate = Context.Request.Query["endDate"].ToString();
 }
 
 <div class="min-h-screen bg-background py-8">
     <div class="container mx-auto px-4">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-foreground">Historial de pujas</h1>
-            <p class="text-muted-foreground">Todas las pujas registradas en el sistema.</p>
-            <span class="text-sm text-muted-foreground">Total registros: @total</span>
-            <div class="mt-3">
+            <h1 class="text-3xl font-bold text-foreground">Bid history</h1>
+            <p class="text-muted-foreground">All bids registered in the system.</p>
+            <span class="text-sm text-muted-foreground">Total records: @total</span>
+            <div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                <form method="get" asp-controller="Reports" asp-action="BidHistory" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:items-end">
+                    <div class="flex flex-col gap-2 min-w-40">
+                        <label for="startDate" class="text-sm font-medium text-foreground">Start date</label>
+                        <input type="date"
+                               id="startDate"
+                               name="startDate"
+                               value="@startDate"
+                               class="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                    </div>
+                    <div class="flex flex-col gap-2 min-w-40">
+                        <label for="endDate" class="text-sm font-medium text-foreground">End date</label>
+                        <input type="date"
+                               id="endDate"
+                               name="endDate"
+                               value="@endDate"
+                               class="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 xl:col-span-2">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-secondary transition-all font-semibold shadow-md shadow-primary/20 border border-primary/20">
+                            <i class="bi bi-funnel mr-2"></i>
+                            Filter
+                        </button>
+                        <a asp-controller="Reports" asp-action="BidHistory"
+                           class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-all font-semibold border border-border shadow-sm">
+                            <i class="bi bi-x-circle mr-2"></i>
+                            Clear
+                        </a>
+                    </div>
+                </form>
                 <a href="/Admin/Reports"
-                   class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-card text-foreground rounded-xl hover:bg-muted/70 transition-all font-semibold border border-border shadow-sm w-fit">
                     <i class="bi bi-arrow-left mr-2"></i>
-                    Volver a reportes
+                    Back to reports
                 </a>
             </div>
         </div>
@@ -24,12 +56,12 @@
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50 text-muted-foreground">
                         <tr class="text-left">
-                            <th class="px-4 py-3">Subasta</th>
-                            <th class="px-4 py-3">Objeto</th>
-                            <th class="px-4 py-3">Usuario</th>
-                            <th class="px-4 py-3">Monto</th>
-                            <th class="px-4 py-3">Fecha y hora</th>
-                            <th class="px-4 py-3">Estado de la puja</th>
+                            <th class="px-4 py-3">Auction</th>
+                            <th class="px-4 py-3">Object</th>
+                            <th class="px-4 py-3">User</th>
+                            <th class="px-4 py-3">Amount</th>
+                            <th class="px-4 py-3">Date and time</th>
+                            <th class="px-4 py-3">Bid status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
@@ -42,7 +74,7 @@
                                 <td class="px-4 py-3 text-foreground">$@item.Amount.ToString("N0")</td>
                                 <td class="px-4 py-3 text-foreground">@item.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
                                 <td class="px-4 py-3">
-                                    <span class="px-2 py-1 rounded-full text-xs font-semibold @(item.BidStatus == "Ganadora actual" ? "bg-green-500/20 text-green-400" : "bg-muted text-foreground")">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold @(item.BidStatus == "Current winner" ? "bg-green-500/20 text-green-400" : "bg-muted text-foreground")">
                                         @item.BidStatus
                                     </span>
                                 </td>

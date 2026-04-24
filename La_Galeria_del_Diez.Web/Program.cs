@@ -83,10 +83,16 @@ builder.Services.Configure<AppConfig>(builder.Configuration);
 builder.Host.UseSerilog(Log.Logger);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => {
+    options.Filters.Add(
+        new ResponseCacheAttribute
+        {
+            NoStore = true,
+            Location = ResponseCacheLocation.None,
+        });
+});
 builder.Services.AddSignalR();
 builder.Services.AddHostedService<AuctionClosingBackgroundService>();
-builder.Services.AddSingleton<ICurrentUserProvider, ManualCurrentUserProvider>();
 
 //*********** 
 // ======================= 
@@ -127,17 +133,9 @@ builder.Services.AddAutoMapper(config =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => {
         options.LoginPath = "/Login/Index";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
         options.AccessDeniedPath = "/Login/Forbidden";
-});
-
-builder.Services.AddControllersWithViews(options => {
-    options.Filters.Add(
-        new ResponseCacheAttribute
-        {
-            NoStore = true,
-            Location = ResponseCacheLocation.None,
-        });
 });
 
 // ======================= 
@@ -183,6 +181,7 @@ app.UseRouting();
 
 app.UseSerilogRequestLogging();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();

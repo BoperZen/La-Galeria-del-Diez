@@ -199,75 +199,92 @@ var isActive = Model.EndDate > DateTime.Now;
 
                 @if (isActive)
                 {
-                    <details class="w-full mt-3 bid-card border border-border bg-card">
-                        <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
-                            <span class="flex items-center">
-                                <i class="bi bi-cash-coin mr-2 text-primary"></i>
-                                Place a bid
-                            </span>
-                            <i class="bi bi-chevron-down text-xs transition-transform"></i>
-                        </summary>
-                        <form id="bidForm" asp-controller="Subasta" asp-action="Bid" asp-route-id="@Model.Id" method="post" class="px-4 pb-4 pt-2 space-y-4">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" id="bidAmountRaw" name="amount" value="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-
-                            <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
-                                <div class="bid-meta text-muted-foreground">
-                                    Last registered bid
-                                </div>
-                                <div class="bid-controls">
-                                    <button type="button"
-                                            class="bid-control border border-border text-foreground"
-                                            data-bid-action="decrease"
-                                            @(canBid ? "" : "disabled")>
-                                        <i class="bi bi-dash"></i>
-                                    </button>
-                                    <input type="text"
-                                           id="bidAmountInput"
-                                           value="@nextBidAmount.ToString("N0")"
-                                           data-step="1"
-                                           data-min="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
-                                           data-current="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
-                                           class="bid-amount text-center px-4 py-2 bg-muted border border-border text-foreground"
-                                           readonly>
-                                    <button type="button"
-                                            class="bid-control border border-border text-foreground"
-                                            data-bid-action="increase"
-                                            @(canBid ? "" : "disabled")>
-                                        <i class="bi bi-plus"></i>
-                                    </button>
-                                </div>
-                                <div class="flex justify-between">
-                                    <div>
-                                        <div class="bid-meta text-muted-foreground">Current price</div>
-                                        <div id="currentBidPriceTop" class="font-semibold text-foreground">$@currentPrice.ToString("N0")</div>
-                                    </div>
-                                    <div>
-                                        <div class="bid-meta text-muted-foreground">Minimum increment</div>
-                                        <div class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</div>
-                                    </div>
-                                </div>
-                                @if (currentUserId == Model.IdUser)
-                                {
-                                    <div class="bid-meta text-red-400">The seller cannot bid on their own auction.</div>
-                                }
-                                @if (isSellerUser)
-                                {
-                                    <div class="bid-meta text-red-400">Users with seller role cannot place bids.</div>
-                                }
+                    @if (currentUserId <= 0)
+                    {
+                        <div class="w-full mt-3 bid-card border border-border bg-card p-4 space-y-3">
+                            <div class="flex items-center gap-2 text-foreground font-semibold">
+                                <i class="bi bi-lock-fill text-primary"></i>
+                                Sign in required
                             </div>
+                            <p class="text-sm text-muted-foreground">You can view the auction, but you must sign in to place a bid.</p>
+                            <a asp-controller="Login" asp-action="Index"
+                               class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-secondary transition-colors">
+                                Sign in to bid
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <details class="w-full mt-3 bid-card border border-border bg-card">
+                            <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between bid-title text-foreground">
+                                <span class="flex items-center">
+                                    <i class="bi bi-cash-coin mr-2 text-primary"></i>
+                                    Place a bid
+                                </span>
+                                <i class="bi bi-chevron-down text-xs transition-transform"></i>
+                            </summary>
+                            <form id="bidForm" asp-controller="Subasta" asp-action="Bid" asp-route-id="@Model.Id" method="post" class="px-4 pb-4 pt-2 space-y-4">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" id="bidAmountRaw" name="amount" value="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
 
-                            <div class="flex justify-end">
-                                <button type="submit"
-                                        id="bidSubmitButton"
-                                        class="bid-submit bg-primary text-primary-foreground hover:bg-secondary shadow-lg @(canBid ? "" : "")"
-                                        @(canBid ? "" : "disabled")>
-                                    <i class="bi bi-arrow-right-circle"></i>
-                                    Bid
-                                </button>
-                            </div>
-                        </form>
-                    </details>
+                                <div class="rounded-lg border border-border p-4 space-y-4" style="background-color: rgba(255,255,255,0.02);">
+                                    <div class="bid-meta text-muted-foreground">
+                                        Last registered bid
+                                    </div>
+                                    <div class="bid-controls">
+                                        <button type="button"
+                                                class="bid-control border border-border text-foreground"
+                                                data-bid-action="decrease"
+                                                @(canBid ? "" : "disabled")>
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <input type="text"
+                                               id="bidAmountInput"
+                                               value="@nextBidAmount.ToString("N0")"
+                                               data-step="1"
+                                               data-min="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                               data-current="@nextBidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                               class="bid-amount text-center px-4 py-2 bg-muted border border-border text-foreground"
+                                               readonly>
+                                        <button type="button"
+                                                class="bid-control border border-border text-foreground"
+                                                data-bid-action="increase"
+                                                @(canBid ? "" : "disabled")>
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <div class="bid-meta text-muted-foreground">Current price</div>
+                                            <div id="currentBidPriceTop" class="font-semibold text-foreground">$@currentPrice.ToString("N0")</div>
+                                        </div>
+                                        <div>
+                                            <div class="bid-meta text-muted-foreground">Minimum increment</div>
+                                            <div class="font-semibold text-foreground">$@Model.MinIncrement.ToString("N0")</div>
+                                        </div>
+                                    </div>
+                                    @if (currentUserId == Model.IdUser)
+                                    {
+                                        <div class="bid-meta text-red-400">The seller cannot bid on their own auction.</div>
+                                    }
+                                    @if (isSellerUser)
+                                    {
+                                        <div class="bid-meta text-red-400">Users with seller role cannot place bids.</div>
+                                    }
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <button type="submit"
+                                            id="bidSubmitButton"
+                                            class="bid-submit bg-primary text-primary-foreground hover:bg-secondary shadow-lg @(canBid ? "" : "")"
+                                            @(canBid ? "" : "disabled")>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                        Bid
+                                    </button>
+                                </div>
+                            </form>
+                        </details>
+                    }
                 }
             </div>
 

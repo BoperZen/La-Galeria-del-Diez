@@ -1,16 +1,18 @@
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Web.Hubs;
-using La_Galeria_del_Diez.Web.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using System.Globalization;
+using System.Security.Claims;
 using X.PagedList.Extensions;
 
 namespace La_Galeria_del_Diez.Web.Controllers
 {
+    [Authorize]
     public class SubastaController : Controller
     {
         private readonly IServiceAuction _serviceAuction;
@@ -18,19 +20,18 @@ namespace La_Galeria_del_Diez.Web.Controllers
         private readonly IServiceObject _serviceObject;
         private readonly IServiceUser _serviceUser;
         private readonly IHubContext<AuctionHub> _auctionHub;
-        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub, ICurrentUserProvider currentUserProvider)
+        public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub)
         {
             _serviceAuction = serviceAuction;
             _serviceBidding = serviceBidding;
             _serviceObject = serviceObject;
             _serviceUser = serviceUser;
             _auctionHub = auctionHub;
-            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int? page)
         {
             var activeAuctions = await _serviceAuction.ListActiveAsync(DateTime.Now);
@@ -41,6 +42,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Finalizadas(int? page)
         {
             var finishedAuctions = await _serviceAuction.ListFinishedAsync(DateTime.Now);
@@ -50,8 +52,15 @@ namespace La_Galeria_del_Diez.Web.Controllers
             return View(finishedAuctions.ToPagedList(pageNumber, pageSize));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Borrador(int? page)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             var DraftAuctions = await _serviceAuction.ListDraftAsync(DateTime.Now);
 
             int pageNumber = page ?? 1;
@@ -60,6 +69,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -74,8 +84,9 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CurrentUserId = _currentUserProvider.CurrentUserId;
-            var currentUser = await _serviceUser.FindByIdAsync(_currentUserProvider.CurrentUserId);
+            var currentUserId = GetCurrentUserId();
+            ViewBag.CurrentUserId = currentUserId;
+            var currentUser = currentUserId > 0 ? await _serviceUser.FindByIdAsync(currentUserId) : null;
             ViewBag.CurrentUserRoleId = currentUser?.IdRol ?? 0;
 
             return View(auction);
@@ -92,18 +103,30 @@ namespace La_Galeria_del_Diez.Web.Controllers
             ViewBag.User = await _serviceUser.FindByIdAsync(id);
         }
 
-        public async Task<ActionResult> Create()
+        public async Task<IActionResult> Create()
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             await LoadCombosAsync();
-            await GetUser(_currentUserProvider.CurrentUserId);
+            await GetUser(GetCurrentUserId());
             return View(new AuctionDTO());
         }
 
         //Create Auction
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(AuctionDTO dto)
+        public async Task<IActionResult> Create(AuctionDTO dto)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             if (dto.IdObject <= 0)
             {
                 ModelState.AddModelError(nameof(dto.IdObject), "You must select an object.");
@@ -157,7 +180,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 });
 
                 await LoadCombosAsync();
-                await GetUser(_currentUserProvider.CurrentUserId);
+                await GetUser(GetCurrentUserId());
                 return View(dto);
             }
 
@@ -176,8 +199,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
         //Create Auction
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateBorrador(AuctionDTO dto)
+        public async Task<IActionResult> CreateBorrador(AuctionDTO dto)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             if (dto.IdObject <= 0)
             {
                 ModelState.AddModelError(nameof(dto.IdObject), "You must select an object.");
@@ -231,7 +260,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 });
 
                 await LoadCombosAsync();
-                await GetUser(_currentUserProvider.CurrentUserId);
+                await GetUser(GetCurrentUserId());
                 return View(dto);
             }
 
@@ -248,8 +277,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
         }
 
         // GET: LibroController/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             var dto = await _serviceAuction.FindByIdAsync(id.Value);
             DateTime now = DateTime.Now;
             if (now < dto.StartDate)
@@ -268,8 +303,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
         // POST: LibroController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, AuctionDTO dto)
+        public async Task<IActionResult> Edit(int id, AuctionDTO dto)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             if (dto.BasePrice <= 0)
             {
                 ModelState.AddModelError(nameof(dto.BasePrice), "The base price must be greater than 0.");
@@ -328,8 +369,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Publish(int id)
+        public async Task<IActionResult> Publish(int id)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             var auction = await _serviceAuction.FindByIdAsync(id);
             if (auction == null)
             {
@@ -352,6 +399,17 @@ namespace La_Galeria_del_Diez.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Bid(int id, string amount)
         {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId <= 0)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Unauthorized(new { message = "You must sign in to place a bid." });
+                }
+
+                return RedirectToAction("Index", "Login");
+            }
+
             if (!decimal.TryParse(amount, NumberStyles.Number, CultureInfo.InvariantCulture, out var bidAmount))
             {
                 var invalidAmountMessage = "The bid amount is not valid.";
@@ -372,7 +430,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
             var dto = new BiddingDTO
             {
                 IdAuction = id,
-                IdUser = _currentUserProvider.CurrentUserId,
+                IdUser = currentUserId,
                 Amount = bidAmount,
                 PaymentMethod = "Null"
             };
@@ -450,8 +508,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var accessResult = await EnsureAuctionManagerAccessAsync();
+            if (accessResult != null)
+            {
+                return accessResult;
+            }
+
             var auction = await _serviceAuction.FindByIdAsync(id);
             if (auction == null)
             {
@@ -468,6 +532,29 @@ namespace La_Galeria_del_Diez.Web.Controllers
             });
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(idClaim, out var currentUserId) ? currentUserId : 0;
+        }
+
+        private async Task<IActionResult?> EnsureAuctionManagerAccessAsync()
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId <= 0)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var currentUser = await _serviceUser.FindByIdAsync(currentUserId);
+            if (currentUser?.IdRol is not 1 and not 2)
+            {
+                return RedirectToAction("Forbidden", "Login");
+            }
+
+            return null;
         }
     }
 }

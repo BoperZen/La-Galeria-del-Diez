@@ -43,7 +43,7 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
 
             if (@object != null)
             {
-                usuarioDTO = _mapper.Map<UsuarioDTO>(@object);
+                usuarioDTO = _mapper.Map<UserDTO>(@object);
             }
 
             return usuarioDTO;
@@ -57,6 +57,17 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
 
         public async Task<UserDTO> AddAsync(UserDTO dto)
         {
+            if (dto.RegistrationDate == default)
+            {
+                dto.RegistrationDate = DateTime.Now;
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                string secret = _options.Value.Crypto.Secret;
+                dto.Password = Cryptography.Encrypt(dto.Password, secret);
+            }
+
             var user = _mapper.Map<User>(dto);
             var created = await _repository.AddAsync(user);
             return _mapper.Map<UserDTO>(created);

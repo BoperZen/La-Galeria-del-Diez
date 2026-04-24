@@ -36,7 +36,7 @@
                     <tbody class="divide-y divide-border">
                         @foreach (var item in Model)
                         {
-                            var badge = item.Status == "Activa" ? "bg-green-500/20 text-green-400" : item.Status == "Cancelada" ? "bg-red-500/20 text-red-400" : "bg-muted text-foreground";
+                            var badge = item.Status == "Active" ? "bg-green-500/20 text-green-400" : item.Status == "Canceled" ? "bg-red-500/20 text-red-400" : "bg-muted text-foreground";
                             <tr>
                                 <td class="px-4 py-3 text-foreground">#@item.Rank</td>
                                 <td class="px-4 py-3 text-foreground">@item.AuctionTitle</td>

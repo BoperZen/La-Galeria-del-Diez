@@ -1,23 +1,23 @@
 @model IEnumerable<La_Galeria_del_Diez.Application.DTOs.Reports.AuctionSummaryReportDto>
 @{
-    ViewData["Title"] = "Resumen de subastas";
+    ViewData["Title"] = "Auction summary";
     var total = Model.Count();
-    var active = Model.Count(m => m.Status == "Activa");
-    var finished = Model.Count(m => m.Status == "Finalizada");
-    var canceled = Model.Count(m => m.Status == "Cancelada");
+    var active = Model.Count(m => m.Status == "Active");
+    var finished = Model.Count(m => m.Status == "Finished");
+    var canceled = Model.Count(m => m.Status == "Canceled");
 }
 
 <div class="min-h-screen bg-background py-8">
     <div class="container mx-auto px-4">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-foreground">Resumen de subastas</h1>
-            <p class="text-muted-foreground">Vista general de todas las subastas y sus métricas clave.</p>
-            <span class="text-sm text-muted-foreground">Total registros: @total</span>
+            <h1 class="text-3xl font-bold text-foreground">Auction summary</h1>
+            <p class="text-muted-foreground">Overview of all auctions and their key metrics.</p>
+            <span class="text-sm text-muted-foreground">Total records: @total</span>
             <div class="mt-3">
                 <a href="/Admin/Reports"
                    class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
                     <i class="bi bi-arrow-left mr-2"></i>
-                    Volver a reportes
+                    Back to reports
                 </a>
             </div>
         </div>
@@ -27,20 +27,20 @@
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50 text-muted-foreground">
                         <tr class="text-left">
-                            <th class="px-4 py-3">Nombre/Título</th>
-                            <th class="px-4 py-3">Objeto subastado</th>
-                            <th class="px-4 py-3">Estado</th>
-                            <th class="px-4 py-3">Precio base</th>
-                            <th class="px-4 py-3">Precio actual</th>
-                            <th class="px-4 py-3">Total pujas</th>
-                            <th class="px-4 py-3">Fecha inicio</th>
-                            <th class="px-4 py-3">Fecha fin</th>
+                            <th class="px-4 py-3">Name / Title</th>
+                            <th class="px-4 py-3">Auctioned object</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Base price</th>
+                            <th class="px-4 py-3">Current price</th>
+                            <th class="px-4 py-3">Total bids</th>
+                            <th class="px-4 py-3">Start date</th>
+                            <th class="px-4 py-3">End date</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
                         @foreach (var item in Model)
                         {
-                            var badge = item.Status == "Activa" ? "bg-green-500/20 text-green-400" : item.Status == "Cancelada" ? "bg-red-500/20 text-red-400" : "bg-muted text-foreground";
+                            var badge = item.Status == "Active" ? "bg-green-500/20 text-green-400" : item.Status == "Canceled" ? "bg-red-500/20 text-red-400" : "bg-muted text-foreground";
                             <tr>
                                 <td class="px-4 py-3 text-foreground">@item.AuctionTitle</td>
                                 <td class="px-4 py-3 text-foreground">@item.ObjectName</td>

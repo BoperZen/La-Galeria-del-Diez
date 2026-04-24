@@ -8,7 +8,7 @@ namespace La_Galeria_del_Diez.Application.Interfaces
     {
         Task<IEnumerable<AuctionSummaryReportDto>> GetAuctionSummaryAsync();
         Task<IEnumerable<MostActiveAuctionDto>> GetMostActiveAuctionsAsync();
-        Task<IEnumerable<BidHistoryReportDto>> GetBidHistoryAsync();
+        Task<IEnumerable<BidHistoryReportDto>> GetBidHistoryAsync(DateTime? startDate = null, DateTime? endDateExclusive = null);
         Task<IEnumerable<TopValuedItemDto>> GetTopValuedItemsAsync();
     }
 }

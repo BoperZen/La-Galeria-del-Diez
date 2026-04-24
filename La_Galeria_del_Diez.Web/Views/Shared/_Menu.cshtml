@@ -1,4 +1,10 @@
-﻿@inject La_Galeria_del_Diez.Web.Services.ICurrentUserProvider CurrentUserProvider
+﻿@using System.Security.Claims
+@{
+    var currentUserIdClaim = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    var currentUserId = int.TryParse(currentUserIdClaim, out var parsedUserId) ? parsedUserId : 0;
+    var currentUserName = User?.FindFirstValue(ClaimTypes.Name) ?? "Guest";
+    var currentUserProfileUrl = currentUserId > 0 ? Url.Action("Details", "User", new { id = currentUserId }) : string.Empty;
+}
 
 <nav class="relative bg-card border-b border-border z-[100] shadow-lg">
     <div class="container mx-auto px-4">
@@ -35,12 +41,17 @@
 
                 <!-- User Menu -->
                 <div class="relative z-[110]" x-data="{ open: false }">
-                    <button @@click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-full border border-border bg-muted/40 hover:bg-muted transition-colors shadow-sm">
+                    <button type="button"
+                            @@click="open = !open"
+                            @@dblclick.prevent.stop="if ($el.dataset.profileUrl) window.location.href = $el.dataset.profileUrl"
+                            data-profile-url="@currentUserProfileUrl"
+                            title="Doble clic para ver mi perfil"
+                            class="flex items-center gap-2 px-3 py-2 rounded-full border border-border bg-muted/40 hover:bg-muted transition-colors shadow-sm">
                         <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 text-primary">
                             <i class="bi bi-person-circle text-xl"></i>
                         </span>
                         <span class="hidden md:block text-foreground text-sm font-semibold whitespace-nowrap">
-                            @(CurrentUserProvider.CurrentUserId > 0 ? $"Usuario #{CurrentUserProvider.CurrentUserId}" : "Invitado")
+                            @(User?.Identity?.IsAuthenticated == true ? currentUserName : "Guest")
                         </span>
                         <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -57,7 +68,7 @@
                          x-transition:leave-end="transform opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-2xl py-1 z-[9999]"
                          style="display: none; position: absolute; z-index: 9999; pointer-events: auto;">
-                        @if (CurrentUserProvider.CurrentUserId == 1)
+                        @if (currentUserId == 1)
                         {
                             <a href="/Admin/Reports" class="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors">
                                 <i class="bi bi-clipboard-data mr-2"></i>Reportes
