@@ -8,5 +8,6 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
         Task<UserDTO?> FindByIdAsync(int id);
         Task<UserDTO> AddAsync(UserDTO dto);
         Task UpdateAsync(UserDTO dto);
+        Task<UserDTO> LoginAsync(string id, string password);
     }
 }

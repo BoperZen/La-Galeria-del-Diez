@@ -36,6 +36,15 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
             return collection;
         }
 
+        public async Task<User> LoginAsync(string id, string password)
+        {
+            var @object = await _context.Set<User>()
+                                        .Include(b => b.IdRolNavigation)
+                                        .Where(p => p.Email == id && p.Password == password)
+                                        .FirstOrDefaultAsync();
+            return @object!;
+        }
+
         public async Task<int> Tally(int id)
         {
             var @object = await _context.Set<User>().FindAsync(id);

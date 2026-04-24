@@ -3,6 +3,9 @@ using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Infraestructure.Models;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
+using Libreria.Application.Config;
+using Libreria.Application.Utils;
+using Microsoft.Extensions.Options;
 
 namespace La_Galeria_del_Diez.Application.Services.Implementatios
 {
@@ -10,11 +13,13 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
     {
         private readonly IRepositoryUser _repository;
         private readonly IMapper _mapper;
+        private readonly IOptions<AppConfig> _options;
 
-        public ServiceUser(IRepositoryUser repository, IMapper mapper)
+        public ServiceUser(IRepositoryUser repository, IMapper mapper, IOptions<AppConfig> options)
         {
             _repository = repository;
             _mapper = mapper;
+            _options = options;
         }
 
         public async Task<UserDTO?> FindByIdAsync(int id)
@@ -23,6 +28,25 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             var objectMapped = _mapper.Map<UserDTO>(@object);
             objectMapped.Tally = await Tally(id);
             return objectMapped;
+        }
+
+        public async Task<UserDTO> LoginAsync(string id, string password)
+        {
+            UserDTO usuarioDTO = null!;
+
+            // Llave secreta
+            string secret = _options.Value.Crypto.Secret;
+            // Password encriptado
+            string passwordEncrypted = Cryptography.Encrypt(password, secret);
+
+            var @object = await _repository.LoginAsync(id, passwordEncrypted);
+
+            if (@object != null)
+            {
+                usuarioDTO = _mapper.Map<UsuarioDTO>(@object);
+            }
+
+            return usuarioDTO;
         }
 
         public async Task<ICollection<UserDTO>> ListAsync()

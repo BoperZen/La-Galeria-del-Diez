@@ -6,7 +6,10 @@ using La_Galeria_del_Diez.Infraestructure.Repository.Implementations;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
 using La_Galeria_del_Diez.Web.Hubs;
 using La_Galeria_del_Diez.Web.Services;
+using Libreria.Application.Config;
 using Libreria.Web.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
@@ -72,6 +75,10 @@ Log.Logger = logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Mapeo de la clase AppConfig para leer appsettings.json 
+
+builder.Services.Configure<AppConfig>(builder.Configuration);
+
 builder.Host.UseSerilog(Log.Logger);
 
 // Add services to the container.
@@ -109,6 +116,24 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<BiddingProfile>();
     config.AddProfile<ImageProfile>();
     config.AddProfile<CategoryProfile>();
+});
+
+//Seguridad 
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
+        options.LoginPath = "/Login/Index";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.AccessDeniedPath = "/Login/Forbidden";
+});
+
+builder.Services.AddControllersWithViews(options => {
+    options.Filters.Add(
+        new ResponseCacheAttribute
+        {
+            NoStore = true,
+            Location = ResponseCacheLocation.None,
+        });
 });
 
 // ======================= 

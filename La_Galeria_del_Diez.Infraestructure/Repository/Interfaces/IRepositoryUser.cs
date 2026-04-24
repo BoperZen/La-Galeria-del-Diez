@@ -11,5 +11,6 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Interfaces
         Task<int> Tally(int id);
         Task<User> AddAsync(User user);
         Task UpdateAsync(User user);
+        Task<User> LoginAsync(string id, string password);
     }
 }
