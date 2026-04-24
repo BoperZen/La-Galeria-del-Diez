@@ -95,6 +95,12 @@ namespace La_Galeria_del_Diez.Application.Services.Implementatios
             await _repository.UpdateAsync(entity);
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _repository.FindByIdAsync(id);
+            await _repository.DeleteAsync(entity);
+        }
+
         public async Task UpdateStateAsync(int id, int stateId)
         {
             await _repository.UpdateStateAsync(id, stateId);

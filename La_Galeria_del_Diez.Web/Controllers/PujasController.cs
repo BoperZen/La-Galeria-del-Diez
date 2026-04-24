@@ -1,6 +1,7 @@
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Web.Models;
+using La_Galeria_del_Diez.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -11,13 +12,14 @@ namespace La_Galeria_del_Diez.Web.Controllers
         private readonly IServiceAuction _serviceAuction;
         private readonly IServiceBidding _serviceBidding;
         private readonly IServiceUser _serviceUser;
-        private int _usuarioIdActualId = 1;
+        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public PujasController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceUser serviceUser)
+        public PujasController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceUser serviceUser, ICurrentUserProvider currentUserProvider)
         {
             _serviceAuction = serviceAuction;
             _serviceBidding = serviceBidding;
             _serviceUser = serviceUser;
+            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet]
@@ -83,7 +85,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 ModelState.AddModelError(nameof(model.PaymentMethod), "Debe indicar el método de pago.");
             }
 
-            var user = await _serviceUser.FindByIdAsync(_usuarioIdActualId);
+            var user = await _serviceUser.FindByIdAsync(_currentUserProvider.CurrentUserId);
             if (user == null)
             {
                 if (string.IsNullOrWhiteSpace(model.BuyerName))
@@ -114,7 +116,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 };
 
                 user = await _serviceUser.AddAsync(newUser);
-                _usuarioIdActualId = user.Id;
+                _currentUserProvider.CurrentUserId = user.Id;
             }
 
             var biddingDto = new BiddingDTO

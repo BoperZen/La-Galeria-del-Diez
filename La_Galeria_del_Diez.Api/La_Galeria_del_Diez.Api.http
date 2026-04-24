@@ -1,0 +1,4 @@
+@La_Galeria_del_Diez.Api_HostAddress = http://localhost:5181
+
+GET {{La_Galeria_del_Diez.Api_HostAddress}}/api/auction
+Accept: application/json

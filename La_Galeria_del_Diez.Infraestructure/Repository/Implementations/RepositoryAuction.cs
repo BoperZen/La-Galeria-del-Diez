@@ -176,7 +176,7 @@ namespace La_Galeria_del_Diez.Infraestructure.Repository.Implementations
                 _context.Attach(auction);
             }
 
-            _context.Entry(auction).State = EntityState.Modified;
+            _context.Set<Auction>().Remove(auction);
 
             await _context.SaveChangesAsync();
         }

@@ -1,6 +1,7 @@
 using La_Galeria_del_Diez.Application.Profiles;
 using La_Galeria_del_Diez.Application.Services.Implementatios;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
+using La_Galeria_del_Diez.Application.Interfaces;
 using La_Galeria_del_Diez.Infraestructure.Data;
 using La_Galeria_del_Diez.Infraestructure.Repository.Implementations;
 using La_Galeria_del_Diez.Infraestructure.Repository.Interfaces;
@@ -85,6 +86,7 @@ builder.Host.UseSerilog(Log.Logger);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 builder.Services.AddHostedService<AuctionClosingBackgroundService>();
+builder.Services.AddSingleton<ICurrentUserProvider, ManualCurrentUserProvider>();
 
 //*********** 
 // ======================= 
@@ -101,6 +103,8 @@ builder.Services.AddTransient<IServiceUser, ServiceUser>();
 builder.Services.AddTransient<IServiceObject, ServiceObject>();
 builder.Services.AddTransient<IServiceAuction, ServiceAuction>();
 builder.Services.AddTransient<IServiceBidding, ServiceBidding>();
+builder.Services.AddTransient<IReportRepository, ReportRepository>();
+builder.Services.AddTransient<IReportService, ReportService>();
 
 // ======================= 
 // Configurar AutoMapper 

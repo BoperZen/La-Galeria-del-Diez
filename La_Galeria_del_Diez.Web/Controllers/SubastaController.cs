@@ -1,7 +1,7 @@
 using La_Galeria_del_Diez.Application.DTOs;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Web.Hubs;
-using Libreria.Web.Util;
+using La_Galeria_del_Diez.Web.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,15 +18,16 @@ namespace La_Galeria_del_Diez.Web.Controllers
         private readonly IServiceObject _serviceObject;
         private readonly IServiceUser _serviceUser;
         private readonly IHubContext<AuctionHub> _auctionHub;
-        private int IdUser = 3;
+        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub)
+        public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub, ICurrentUserProvider currentUserProvider)
         {
             _serviceAuction = serviceAuction;
             _serviceBidding = serviceBidding;
             _serviceObject = serviceObject;
             _serviceUser = serviceUser;
             _auctionHub = auctionHub;
+            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet]
@@ -73,8 +74,8 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CurrentUserId = IdUser;
-            var currentUser = await _serviceUser.FindByIdAsync(IdUser);
+            ViewBag.CurrentUserId = _currentUserProvider.CurrentUserId;
+            var currentUser = await _serviceUser.FindByIdAsync(_currentUserProvider.CurrentUserId);
             ViewBag.CurrentUserRoleId = currentUser?.IdRol ?? 0;
 
             return View(auction);
@@ -94,7 +95,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
         public async Task<ActionResult> Create()
         {
             await LoadCombosAsync();
-            await GetUser(IdUser);
+            await GetUser(_currentUserProvider.CurrentUserId);
             return View(new AuctionDTO());
         }
 
@@ -156,7 +157,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 });
 
                 await LoadCombosAsync();
-                await GetUser(IdUser);
+                await GetUser(_currentUserProvider.CurrentUserId);
                 return View(dto);
             }
 
@@ -230,7 +231,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 });
 
                 await LoadCombosAsync();
-                await GetUser(IdUser);
+                await GetUser(_currentUserProvider.CurrentUserId);
                 return View(dto);
             }
 
@@ -371,7 +372,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
             var dto = new BiddingDTO
             {
                 IdAuction = id,
-                IdUser = IdUser,
+                IdUser = _currentUserProvider.CurrentUserId,
                 Amount = bidAmount,
                 PaymentMethod = "Null"
             };

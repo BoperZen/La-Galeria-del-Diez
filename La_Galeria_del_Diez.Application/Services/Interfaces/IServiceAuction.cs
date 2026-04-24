@@ -18,6 +18,7 @@ namespace La_Galeria_del_Diez.Application.Services.Interfaces
         Task<AuctionDTO?> FindByIdAsync(int id);
         Task AddAsync(AuctionDTO dto);
         Task UpdateAsync(int id, AuctionDTO dto);
+        Task DeleteAsync(int id);
         Task UpdateStateAsync(int id, int stateId);
     }
 }
