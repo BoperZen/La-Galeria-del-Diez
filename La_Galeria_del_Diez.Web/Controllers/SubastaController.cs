@@ -18,7 +18,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
         private readonly IServiceObject _serviceObject;
         private readonly IServiceUser _serviceUser;
         private readonly IHubContext<AuctionHub> _auctionHub;
-        private int IdUser = 7;
+        private int IdUser = 3;
 
         public SubastaController(IServiceAuction serviceAuction, IServiceBidding serviceBidding, IServiceObject serviceObject, IServiceUser serviceUser, IHubContext<AuctionHub> auctionHub)
         {
