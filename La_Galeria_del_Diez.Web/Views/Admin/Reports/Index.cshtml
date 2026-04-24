@@ -1,0 +1,125 @@
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="min-h-screen bg-background pt-16 pb-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2 bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-4">
+                <div class="flex items-center gap-3 text-primary">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                        <i class="bi bi-clipboard-data text-2xl"></i>
+                    </span>
+                    <div>
+                        <h1 class="text-3xl font-bold text-foreground">Reportes administrativos</h1>
+                        <p class="text-muted-foreground">Selecciona el reporte que deseas consultar.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-muted-foreground">
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                            <i class="bi bi-graph-up"></i>
+                        </span>
+                        <div>
+                            <p class="text-foreground font-semibold">Visión ejecutiva</p>
+                            <p>Indicadores clave de subastas, pujas y objetos.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                            <i class="bi bi-lightning-charge"></i>
+                        </span>
+                        <div>
+                            <p class="text-foreground font-semibold">Acceso rápido</p>
+                            <p>Ranking de actividad y detalle de pujas recientes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-4">
+                <h2 class="text-lg font-semibold text-foreground">Guía rápida</h2>
+                <ul class="space-y-3 text-sm text-muted-foreground">
+                    <li class="flex gap-3">
+                        <span class="text-primary"><i class="bi bi-check-circle"></i></span>
+                        <span>Revisa el resumen para una vista global.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="text-primary"><i class="bi bi-check-circle"></i></span>
+                        <span>Consulta subastas activas antes de cerrar pagos.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="text-primary"><i class="bi bi-check-circle"></i></span>
+                        <span>Valida el historial de pujas para auditoría.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div class="group bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-5 transition-all hover:-translate-y-1 hover:shadow-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-foreground">Resumen de subastas</h3>
+                        <p class="text-sm text-muted-foreground">Métricas clave por subasta.</p>
+                    </div>
+                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </span>
+                </div>
+                <a asp-controller="Reports" asp-action="AuctionSummary"
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                    Ver reporte
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="group bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-5 transition-all hover:-translate-y-1 hover:shadow-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-foreground">Subastas más activas</h3>
+                        <p class="text-sm text-muted-foreground">Ranking por cantidad de pujas.</p>
+                    </div>
+                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <i class="bi bi-activity"></i>
+                    </span>
+                </div>
+                <a asp-controller="Reports" asp-action="MostActiveAuctions"
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                    Ver reporte
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="group bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-5 transition-all hover:-translate-y-1 hover:shadow-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-foreground">Historial de pujas</h3>
+                        <p class="text-sm text-muted-foreground">Todas las pujas registradas.</p>
+                    </div>
+                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                </div>
+                <a asp-controller="Reports" asp-action="BidHistory"
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                    Ver reporte
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="group bg-card border border-border rounded-2xl shadow-lg p-6 flex flex-col gap-5 transition-all hover:-translate-y-1 hover:shadow-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-foreground">Objetos más valorados</h3>
+                        <p class="text-sm text-muted-foreground">Ranking por precio máximo alcanzado.</p>
+                    </div>
+                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <i class="bi bi-stars"></i>
+                    </span>
+                </div>
+                <a asp-controller="Reports" asp-action="TopValuedItems"
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-secondary transition-all font-semibold">
+                    Ver reporte
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,23 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using La_Galeria_del_Diez.Application.Services.Interfaces;
 using La_Galeria_del_Diez.Web.Models;
+using La_Galeria_del_Diez.Web.Services;
 
 namespace La_Galeria_del_Diez.Web.Controllers
 {
     public class PaymentController : Controller
     {
         private readonly IServiceAuction _serviceAuction;
-        private int IdUser = 5;
+        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public PaymentController(IServiceAuction serviceAuction)
+        public PaymentController(IServiceAuction serviceAuction, ICurrentUserProvider currentUserProvider)
         {
             _serviceAuction = serviceAuction;
+            _currentUserProvider = currentUserProvider;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(IdUser);
+            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(_currentUserProvider.CurrentUserId);
 
             return View(pendingAuctions);
         }
@@ -31,7 +33,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(IdUser);
+            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(_currentUserProvider.CurrentUserId);
             var isPayable = pendingAuctions.Any(a => a.Id == id);
             if (!isPayable)
             {
@@ -59,7 +61,7 @@ namespace La_Galeria_del_Diez.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(IdUser);
+            var pendingAuctions = await _serviceAuction.ListPendingPaymentByWinnerAsync(_currentUserProvider.CurrentUserId);
             var isPayable = pendingAuctions.Any(a => a.Id == model.AuctionId);
             if (!isPayable)
             {

@@ -1,0 +1,55 @@
+@model IEnumerable<La_Galeria_del_Diez.Application.DTOs.Reports.MostActiveAuctionDto>
+@{
+    ViewData["Title"] = "Subastas más activas";
+    var total = Model.Count();
+}
+
+<div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-foreground">Subastas más activas</h1>
+            <p class="text-muted-foreground">Ranking de subastas por cantidad de pujas.</p>
+            <span class="text-sm text-muted-foreground">Total registros: @total</span>
+            <div class="mt-3">
+                <a href="/Admin/Reports"
+                   class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-all font-semibold">
+                    <i class="bi bi-arrow-left mr-2"></i>
+                    Volver a reportes
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-muted/50 text-muted-foreground">
+                        <tr class="text-left">
+                            <th class="px-4 py-3">Posición</th>
+                            <th class="px-4 py-3">Nombre subasta</th>
+                            <th class="px-4 py-3">Objeto</th>
+                            <th class="px-4 py-3">Estado</th>
+                            <th class="px-4 py-3">Total pujas</th>
+                            <th class="px-4 py-3">Puja más alta</th>
+                            <th class="px-4 py-3">Último postor</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        @foreach (var item in Model)
+                        {
+                            var badge = item.Status == "Activa" ? "bg-green-500/20 text-green-400" : item.Status == "Cancelada" ? "bg-red-500/20 text-red-400" : "bg-muted text-foreground";
+                            <tr>
+                                <td class="px-4 py-3 text-foreground">#@item.Rank</td>
+                                <td class="px-4 py-3 text-foreground">@item.AuctionTitle</td>
+                                <td class="px-4 py-3 text-foreground">@item.ObjectName</td>
+                                <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold @badge">@item.Status</span></td>
+                                <td class="px-4 py-3 text-foreground">@item.TotalBids</td>
+                                <td class="px-4 py-3 text-foreground">$@item.HighestBid.ToString("N0")</td>
+                                <td class="px-4 py-3 text-foreground">@item.LastBidder</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
